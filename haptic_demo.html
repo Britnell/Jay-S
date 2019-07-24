@@ -1,0 +1,803 @@
+<!DOCTYPE html>     
+<html>     
+    <head>      
+    <meta name="viewport" content="width=device-width, initial-scale=1">     
+    <script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>    
+
+    <style>
+    	body {
+    		width: 70%;
+    		margin: 0px 200px;
+    	}
+
+        .button {
+            
+            background-color: lightgrey;
+            color: black;
+            width: 20%;
+            height: 60px;
+            /*
+            padding: 2% 5%;
+            font-size: 100%;
+            padding: 20px;
+             padding around writing : Ypx Xpx;        margin: 5px 2px;
+            padding: 100px 100px;   */
+            font-size: 16px;
+            float: left;
+            border: 4px solid;
+            border-color: white;
+            cursor: pointer;
+        }
+
+        .ibutton {
+            font-size: 16px;
+            width: 20%;
+            height: 140px;
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        
+        .label {
+            padding-left: 100px;
+            padding-right: 20px;
+        }
+
+
+        .topper {
+        	width:20%; 
+        	float:left;
+        	background-color: skyblue;
+        	margin: 8px;
+        	text-align: center;
+        }
+
+        
+        .pics {
+            
+        }
+        
+
+        h2 {
+        	background-color: skyblue;
+        	text-align: center;
+        }
+    </style>
+</head>     
+
+<body>     
+
+
+<div class='topper'  >
+	<h2>LRA </h2>
+</div>
+
+<div  class='topper' onclick="window.location.hash='PIEZOD'" >
+	<h2>Piezo </h2>
+</div>
+
+<div class='topper' onclick="window.location.hash='AITOD'" >
+    <h2>Aito </h2>
+</div>
+
+<div class='topper' onclick="window.location.hash='DOCUMD'" >
+	<h2>Documentation </h2>
+</div>
+
+<script type="text/javascript">    
+
+	</script>
+
+<br><br><br><br><br>
+
+<!--
+<div class="bborder">
+-->
+<h2>ERM </h2>
+
+
+<p>
+    <div style="width: 80%;">
+        The first vibration motors for haptics here ERM motor which had an uneven mass rotating, creating vibrating force .
+        These motors were slow to start and stop and could only really be turned on or off.
+        Also their vibration force goes into all directions 2D / in the plane of the motor rotation:
+        </div>
+    <br>    
+    <img src="./imgs/erm_mot.png" alt="ERM motor" style="max-width: 30%;">     
+    <img src="./imgs/erm_force.png" alt="ERM force" style="max-width: 30%;">
+    <br>
+    <br>
+    </p>
+<br>
+<h2 id="LRAD">LRA</h2>
+
+<!--
+&nbsp; &nbsp; &emsp; &ensp;
+-->
+<div style="background-color: beige; width: 40%; padding: 10px;">
+    Select Playback period / speed : &nbsp;&nbsp;
+    <label id="v_label">800</label> &nbsp;&nbsp; or adjust : 
+    <input id="int_range" type="range" value="800" min="400" max="2000" step="100" onchange="range_f()">
+    </div>
+
+<br><br>
+
+<p>
+    LRA's are an improved version of the classic vibration motor. Here the motor moves a mass on a spring, this concentrates the vibration in one axis / direciton.<br>
+    There are 2 types, that vibrate in different directions, along the plane they are fixed on and perpendicular to the plane they are fixed on.<br>
+
+    <br>
+    
+    <img src="./imgs/lra_motz.png" alt="LRA Z-axis"    style="max-width: 30%;" >
+    <img src="./imgs/lra_mot1.jpg" alt="LRA X-axis"   style="max-width: 30%;">           <br>
+    <img src="./imgs/lra_force.jpg" alt="LRA forces"    style="max-width: 55%;" >      <br>
+    <br>
+    
+
+    LRAs start in a few milliseconds and let us produce vibrations of different intensity for feedback of different strengths:<br>
+    <br>
+</p>
+<div>
+    <img src="./imgs/amplit.jpg" alt="LRA Z-axis"    style="max-width: 35%; float:left;" >
+    <input class="button" type="button" value="Wave 100%" id="1b1" style="float:none;" />
+    <input class="button" type="button" value="Wave 50%" id="1b2" style="float:none;" />
+    <input class="button" type="button" value="Wave 40%" id="1b3"  style="float:none;" /><br>
+    <input class="button" type="button" value="Wave 30%" id="1b4"  style="float:none;" />
+    <input class="button" type="button" value="Wave 25%" id="1b5"  style="float:none;" />
+</div>
+
+<br><br><br><br><br><br><br><br>
+<p>
+    Combine strong and weak pulses in a double pulse.
+    <img src="./imgs/magnit.png" alt="LRA Z-axis"    style="max-width: 35%; float:left;" >
+    <div>
+        </div>
+    </p>
+
+    <input class="button" type="button" value="Strong" id="2b1" />
+    <input class="button" type="button" value="Soft" id="2b2" />
+    <input class="button" type="button" value="Strong Soft" id="2b3" />
+    <input class="button" type="button" value="Soft Strong" id="2b4" />
+<br>
+
+<br><br><br><br><br><br><br><br><br><br>
+
+<p>
+    We can also vary intensity over time for smoother effects by slowly increasing intensity from 0, or decrease intensity slowly<br>
+    Finally also combine the two to fade in and out softly, and a wave that is first low and ends with a strong pulse.<br>
+    <br>
+    <img src="./imgs/attenuat.jpg" alt="LRA attenuation"    style="max-width: 60%; " >
+    <img src="./imgs/lra_hamming.png" alt="LRA both"   style="max-width: 40%; " >
+    </p>    
+    <input class="button" type="button" value="Increasing" id="4b1" />
+    <input class="button" type="button" value="Decreasing" id="4b2" />
+    <input class="button" type="button" value="Increasing & Decreasing" id="4b3" />
+    <input class="button" type="button" value="Increasing & decreasing quickly" id="4b5" />
+    <input class="button" type="button" value="Low then strong end." id="4b4" />
+<br>
+
+<br><br><br><br>
+
+<p>
+    As essentially motors, it takes LRA's a certain time to accelerate to the desired speed, we call this start-up time. For common LRA's the rise time takes 50ms to reach 50%.<br>
+    This means that they are not so great at producing short & sharp clicks, as clicks will not reach 100% intensity if they are shorter than the start-up time. <br> 
+    </p>    
+    <br><br>
+    <img src="./imgs/lra_accel.png" alt="LRA Acceleration"    style="max-width: 30%; float:left; " >
+    <input class="button" type="button" value="Three sin's (15 ms)" id="3b6" />
+    <input class="button" type="button" value="Two sin's (10 ms)" id="3b5" />
+    <input class="button" type="button" value="Full sin (5 ms)" id="3b1" />
+    <input class="button" type="button" value="Half sin (2.5 ms)" id="3b2" />
+    <input class="button" type="button" value="Quarter sin (1 ms)" id="3b3" />
+    <input class="button" type="button" value="square wave (1.5 ms)" id="3b4" />
+<br>
+
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+
+<p>
+    
+    LRA's vibrate through the combination of their motor and spring. This means their vibration is relatively fixed by these physical constants, to a narrow frequency spectrum around this inherent frequency. For common LRAs this lies around 200 to 240 Hz. <br>
+
+    <img src="./imgs/lra_spect.png" alt="LRA spectrum"    style="max-width: 35%; float:left; " >
+    
+    <input class="button" type="button" value="120 Hz" id="5b1" style="float:left; "  />
+    <input class="button" type="button" value="150 Hz" id="5b2"  style="float:left; " />
+    <input class="button" type="button" value="180 Hz" id="5b3"  style="float:left; " />
+    <input class="button" type="button" value="220 Hz" id="5b4"  style="float:left; " />
+    <input class="button" type="button" value="300 Hz" id="5b5"  style="float:left; " />
+    <input class="button" type="button" value="400 Hz" id="5b6"  style="float:left; " />
+
+    </p>
+<br><br><br><br><br><br>
+<br><br><br><br><br><br>
+
+
+<!-- LRA            -->
+<!-- magnitude -->
+<audio id="1sin100" src="./waves/sin 100pc.wav" type="audio/ogg"></audio>
+<audio id="1sin50" src="./waves/sin 50pc.wav" type="audio/ogg"></audio>
+<audio id="1sin40" src="./waves/sin 40pc.wav" type="audio/ogg"></audio>
+<audio id="1sin30" src="./waves/sin 30pc.wav" type="audio/ogg"></audio>
+<audio id="1sin25" src="./waves/sin 25pc.wav" type="audio/ogg"></audio>
+<!--   combined pulses   -->
+<audio id="2hihi" src="./waves/2 str str.wav" type="audio/ogg"></audio>
+<audio id="2lolo" src="./waves/2 low low.wav" type="audio/ogg"></audio>
+<audio id="2hilo" src="./waves/2 hi lo.wav" type="audio/ogg"></audio>
+<audio id="2lohi" src="./waves/2 low hi.wav" type="audio/ogg"></audio>
+<!--   growing intensity -->
+<audio id="4incr" src="./waves/4 sin incr.wav" type="audio/ogg"></audio>
+<audio id="4decr" src="./waves/4 sin decr.wav" type="audio/ogg"></audio>
+<audio id="4attenuat" src="./waves/4 sin attenuat.wav" type="audio/ogg"></audio>
+<audio id="4lowstrong" src="./waves/4 sin lowthenstrong.wav" type="audio/ogg"></audio>
+<audio id="4attshort" src="./waves/4 sin attn short.wav" type="audio/ogg"></audio>
+<!-- Pulses -->
+<audio id="3one" src="./waves/3 1w.wav" type="audio/ogg"></audio>
+<audio id="3half" src="./waves/3 half.wav" type="audio/ogg"></audio>
+<audio id="3quart" src="./waves/3 quart.wav" type="audio/ogg"></audio>
+<audio id="3puls" src="./waves/3 puls660.wav" type="audio/ogg"></audio>
+<audio id="3double" src="./waves/3double.wav" type="audio/ogg"></audio>
+<audio id="3triple" src="./waves/3triple.wav" type="audio/ogg"></audio>
+<!-- Frequencies -->
+<audio id="5sin120" src="./waves/5sin120.wav" type="audio/ogg"></audio>
+<audio id="5sin150" src="./waves/5sin150.wav" type="audio/ogg"></audio>
+<audio id="5sin180" src="./waves/5sin180.wav" type="audio/ogg"></audio>
+<audio id="5sin220" src="./waves/5sin220.wav" type="audio/ogg"></audio>
+<audio id="5sin300" src="./waves/5sin300.wav" type="audio/ogg"></audio>
+<audio id="5sin400" src="./waves/5sin400.wav" type="audio/ogg"></audio>
+
+<!-- ....  -->
+
+<script type="text/javascript">    
+
+/// Magnitudes
+$('#1b1').on('click', function() {
+    var myName = '#' +$(this)[0].id;
+    multitasker( myName, '#1sin100', 800);      });
+$('#1b2').on('click', function() {
+    var myName = '#' +$(this)[0].id;
+    multitasker( myName, '#1sin50', 800);      });
+$('#1b3').on('click', function() {
+    var myName = '#' +$(this)[0].id;
+    multitasker( myName, '#1sin40', 800);      });
+$('#1b4').on('click', function() {
+    var myName = '#' +$(this)[0].id;
+    multitasker( myName, '#1sin30', 800);      });
+$('#1b5').on('click', function() {
+    var myName = '#' +$(this)[0].id;
+    multitasker( myName, '#1sin25', 800);      });
+
+/// Combined pulses
+$('#2b1').on('click', function() {
+    var myName = '#' +$(this)[0].id;
+    multitasker( myName, '#2hihi', 800);      });
+$('#2b2').on('click', function() {
+    var myName = '#' +$(this)[0].id;
+    multitasker( myName, '#2lolo', 800);      });
+$('#2b3').on('click', function() {
+    var myName = '#' +$(this)[0].id;
+    multitasker( myName, '#2hilo', 800);      });
+$('#2b4').on('click', function() {
+    var myName = '#' +$(this)[0].id;
+    multitasker( myName, '#2lohi', 800);      });
+
+/// Combined pulses
+$('#4b1').on('click', function() {
+    var myName = '#' +$(this)[0].id;
+    multitasker( myName, '#4incr', 800);      });
+$('#4b2').on('click', function() {
+    var myName = '#' +$(this)[0].id;
+    multitasker( myName, '#4decr', 800);      });
+$('#4b3').on('click', function() {
+    var myName = '#' +$(this)[0].id;
+    multitasker( myName, '#4attenuat', 800);      });
+$('#4b4').on('click', function() {
+    var myName = '#' +$(this)[0].id;
+    multitasker( myName, '#4lowstrong', 800);      });
+$('#4b5').on('click', function() {
+    var myName = '#' +$(this)[0].id;
+    multitasker( myName, '#4attshort', 800);      });
+
+/// Combined pulses
+$('#3b1').on('click', function() {
+    var myName = '#' +$(this)[0].id;
+    multitasker( myName, '#3one', 800);      });
+$('#3b2').on('click', function() {
+    var myName = '#' +$(this)[0].id;
+    multitasker( myName, '#3half', 800);      });
+$('#3b3').on('click', function() {
+    var myName = '#' +$(this)[0].id;
+    multitasker( myName, '#3quart', 800);      });
+$('#3b4').on('click', function() {
+    var myName = '#' +$(this)[0].id;
+    multitasker( myName, '#3puls', 800);      });
+$('#3b5').on('click', function() {
+    var myName = '#' +$(this)[0].id;
+    multitasker( myName, '#3double', 800);      });
+$('#3b6').on('click', function() {
+    var myName = '#' +$(this)[0].id;
+    multitasker( myName, '#3triple', 800);      });
+
+/// Frequencies
+$('#5b1').on('click', function() {
+    var myName = '#' +$(this)[0].id;
+    multitasker( myName, '#5sin120', 800);      });
+$('#5b2').on('click', function() {
+    var myName = '#' +$(this)[0].id;
+    multitasker( myName, '#5sin150', 800);      });
+$('#5b3').on('click', function() {
+    var myName = '#' +$(this)[0].id;
+    multitasker( myName, '#5sin180', 800);      });
+$('#5b4').on('click', function() {
+    var myName = '#' +$(this)[0].id;
+    multitasker( myName, '#5sin220', 800);      });
+$('#5b5').on('click', function() {
+    var myName = '#' +$(this)[0].id;
+    multitasker( myName, '#5sin300', 800);      });
+$('#5b6').on('click', function() {
+    var myName = '#' +$(this)[0].id;
+    multitasker( myName, '#5sin400', 800);      });
+
+</script>
+
+
+
+<br><br>
+<h2 id='PIEZOD' >Piezo</h2>
+
+<div style="background-color: beige; width: 40%; padding: 10px;">
+    Select Playback period / speed : &nbsp; &nbsp;
+    <label id="v_label2">800</label> &nbsp; &nbsp; or adjust :  <input id="int_range2" type="range" value="800" min="400" max="2000" step="100" onchange="range_f2()">
+    </div>
+<p>
+    One advantage is that peizo's also produce a strong force at around 200 Hz so we can also use them for buzzing vibrations just like LRA motor's. <br>
+    Here are pure waves (sin waves) in various frequencies. Piezo can produce a larger range of frequencies ( i.e. has a much wider frequency spectrum )<br>
+    The piezo can also create waves of much higher frequencies than the LRAs, but the audible component gets louder and more significant. <br>
+    Notice how the piezo's haptic vibrations are still strongest around and below 220 Hz.<br>
+    
+    
+    <h3> Pure Sin-waves  :</h3>
+</p>    
+    <audio id="a1p1" src="./piezo/1sin30.wav" type="audio/ogg"></audio>
+	<audio id="a1p2" src="./piezo/1sin50.wav" type="audio/ogg"></audio>
+	<audio id="a1p3" src="./piezo/1sin60.wav" type="audio/ogg"></audio>
+	<audio id="a1p4" src="./piezo/1sin70.wav" type="audio/ogg"></audio>
+	<audio id="a1p5" src="./piezo/1sin90.wav" type="audio/ogg"></audio>
+	<audio id="a1p6" src="./piezo/1sin120.wav" type="audio/ogg"></audio>
+	<audio id="a1p7" src="./piezo/1sin150.wav" type="audio/ogg"></audio>
+	<audio id="a1p8" src="./piezo/1sin180.wav" type="audio/ogg"></audio>
+	<audio id="a1p9" src="./piezo/1sin220.wav" type="audio/ogg"></audio>
+	<audio id="a1p10" src="./piezo/1sin280.wav" type="audio/ogg"></audio>
+	<audio id="a1p11" src="./piezo/1sin350.wav" type="audio/ogg"></audio>
+	<audio id="a1p12" src="./piezo/1sin440.wav" type="audio/ogg"></audio>
+	<audio id="a1p13" src="./piezo/1sin560.wav" type="audio/ogg"></audio>
+	<audio id="a1p14" src="./piezo/1sin800.wav" type="audio/ogg"></audio>
+
+
+    <input class="button" type="button" value="30 Hz" id="1p1" />
+    <input class="button" type="button" value="50 Hz" id="1p2" />
+    <input class="button" type="button" value="60 Hz" id="1p3" />
+    <input class="button" type="button" value="70 Hz" id="1p4"  />
+    <input class="button" type="button" value="90 Hz" id="1p5"  />
+    <input class="button" type="button" value="120 Hz" id="1p6" />
+    <input class="button" type="button" value="150 Hz" id="1p7" />
+    <input class="button" type="button" value="180 Hz" id="1p8" />
+    <input class="button" type="button" value="220 Hz" id="1p9" />
+    <input class="button" type="button" value="280 Hz" id="1p10" />
+    <input class="button" type="button" value="350 Hz" id="1p11" />
+    <input class="button" type="button" value="440 Hz" id="1p12" />
+    <input class="button" type="button" value="560 Hz" id="1p13" />
+    <input class="button" type="button" value="800 Hz" id="1p14" />
+
+    <img src="./imgs/frequ.svg" alt="LRA spectrum"   style="max-width: 60%;" >
+
+    <script type="text/javascript">  
+	    $('#1p1').on('click', function() {   piezo_click( $(this)[0].id );	});
+	    $('#1p2').on('click', function() {   piezo_click( $(this)[0].id );	});
+	    $('#1p3').on('click', function() {   piezo_click( $(this)[0].id );	});
+	    $('#1p4').on('click', function() {   piezo_click( $(this)[0].id );	});
+	    $('#1p5').on('click', function() {   piezo_click( $(this)[0].id );	});
+	    $('#1p6').on('click', function() {   piezo_click( $(this)[0].id );	});
+	    $('#1p7').on('click', function() {   piezo_click( $(this)[0].id );	});
+	    $('#1p8').on('click', function() {   piezo_click( $(this)[0].id );	});
+	    $('#1p9').on('click', function() {   piezo_click( $(this)[0].id );	});
+	    $('#1p10').on('click', function() {   piezo_click( $(this)[0].id );	});
+	    $('#1p11').on('click', function() {   piezo_click( $(this)[0].id );	});
+	    $('#1p12').on('click', function() {   piezo_click( $(this)[0].id );	});
+	    $('#1p13').on('click', function() {   piezo_click( $(this)[0].id );	});
+	    $('#1p14').on('click', function() {   piezo_click( $(this)[0].id );	});
+	    </script>
+
+    
+	<br><br>
+	<!--
+	This audible component of the haptics is generally not welcome or intended so we will still be working at the lower frequencies.  But the audible part could be used intentionally too.<br>
+	-->
+<br>
+<p>
+	Although we won't use these higher frequency waves for haptics, they are very important since any unique wave has high frequency components. This means we can design unique haptic waveforms much more precisely and the physical result will much more closely match our signal.  <br>
+    We can really tell the difference between the shape of different waveforms, here for example some square- and sawtooth-waves. <br>
+	</p>
+
+	<br>
+	<img src="./imgs/squaresaw.jpg" alt="ERM motor"  style="max-width: 35%; float: left;" > 
+	<audio id="a2p1" src="./piezo/2saw80.wav" type="audio/ogg"></audio>
+	<audio id="a2p2" src="./piezo/2saw120.wav" type="audio/ogg"></audio>
+	<audio id="a2p3" src="./piezo/2saw150.wav" type="audio/ogg"></audio>
+	<audio id="a2p4" src="./piezo/2saw180.wav" type="audio/ogg"></audio>
+	<audio id="a2p5" src="./piezo/2squ90.wav" type="audio/ogg"></audio>
+	<audio id="a2p6" src="./piezo/2squ120.wav" type="audio/ogg"></audio>
+	<audio id="a2p7" src="./piezo/2squ150.wav" type="audio/ogg"></audio>
+	<audio id="a2p8" src="./piezo/2squ180.wav" type="audio/ogg"></audio>
+
+	<input class="button" type="button" value="Saw-T 80Hz" id="2p1" />
+    <input class="button" type="button" value="Saw-T 120Hz" id="2p2" /> <br> <br> <br>
+    <input class="button" type="button" value="Saw-T 150Hz" id="2p3" />
+    <input class="button" type="button" value="Saw-T 180Hz" id="2p4" /> <br> <br> <br>
+    <input class="button" type="button" value="Square 90Hz" id="2p5" />
+    <input class="button" type="button" value="Square 120Hz" id="2p6" /> <br> <br> <br>
+    <input class="button" type="button" value="Square 150Hz" id="2p7" />
+    <input class="button" type="button" value="Square 180Hz" id="2p8" />
+    
+    
+    <script type="text/javascript">  
+	    $('#2p1').on('click', function() {   piezo_click( $(this)[0].id );	});
+	    $('#2p2').on('click', function() {   piezo_click( $(this)[0].id );	});
+	    $('#2p3').on('click', function() {   piezo_click( $(this)[0].id );	});
+	    $('#2p4').on('click', function() {   piezo_click( $(this)[0].id );	});
+	    $('#2p5').on('click', function() {   piezo_click( $(this)[0].id );	});
+	    $('#2p6').on('click', function() {   piezo_click( $(this)[0].id );	});
+	    $('#2p7').on('click', function() {   piezo_click( $(this)[0].id );	});
+	    $('#2p8').on('click', function() {   piezo_click( $(this)[0].id );	});
+
+	    </script>
+
+
+
+<br><br><br><br><br><br><br><br><br>
+
+<p>
+    The high frequency components mean we can produce sharp & short clicks of all kinds. <br>
+    We can truly design our own unique waveforms to create custom haptic feedback by using variatons of force, smooth and rough,length, pauses, vibration, audible component / noise,  etc..
+    <br>
+    <br>
+	</p>
+
+	<!-- BUtton -->
+	<input class="ibutton" type="button" value="Snake" id="3p1" />
+    <input class="ibutton" type="button" value="Clam" id="3p2" />
+    <input class="ibutton" type="button" value="Doubling" id="3p3" />
+    <input class="ibutton" type="button" value="Edges" id="3p4" />
+    <input class="ibutton" type="button" value="Alps" id="3p5" />
+    <input class="ibutton" type="button" value="Ay" id="3p6" />
+    <br><br>
+    <input class="ibutton" type="button" value="ClickA" id="3p9" />
+	<input class="ibutton" type="button" value="ClickA x1.5" id="3p10" />
+	<input class="ibutton" type="button" value="ClickA x2" id="3p11" />
+    <input class="ibutton" type="button" value="ClickA combined" id="3p17" />
+    <br><br>
+	<input class="ibutton" type="button" value="Teeth" id="3p12" />
+	<input class="ibutton" type="button" value="Noisy" id="3p13" />
+	<input class="ibutton" type="button" value="Smooth puls" id="3p14" />
+    <br><br>
+	<input class="ibutton" type="button" value="Spikes" id="3p15" />
+	<input class="ibutton" type="button" value="Spikes smoother" id="3p16" />
+    <input class="ibutton" type="button" value="Bumpy" id="3p7" />
+    <input class="ibutton" type="button" value="Noisy" id="3p8" />
+    
+    
+
+	<!-- Audio  -->    
+	<audio id="a3p1" src="./piezo/3snake.wav" type="audio/ogg"></audio>
+	<audio id="a3p2" src="./piezo/3clam.wav" type="audio/ogg"></audio>
+	<audio id="a3p3" src="./piezo/3doubleF.wav" type="audio/ogg"></audio>
+	<audio id="a3p4" src="./piezo/3hardsin1.wav" type="audio/ogg"></audio>
+	<audio id="a3p5" src="./piezo/3sand.wav" type="audio/ogg"></audio>
+
+	<audio id="a3p6" src="./piezo/4cl2.wav" type="audio/ogg"></audio>
+	<audio id="a3p7" src="./piezo/4cl3.wav" type="audio/ogg"></audio>
+	<audio id="a3p8" src="./piezo/4cl4.wav" type="audio/ogg"></audio>
+
+	<audio id="a3p9" src="./piezo/4cl7.wav" type="audio/ogg"></audio>
+	<audio id="a3p10" src="./piezo/4cl8.wav" type="audio/ogg"></audio>
+	<audio id="a3p11" src="./piezo/4cl9.wav" type="audio/ogg"></audio>
+
+	<audio id="a3p12" src="./piezo/4cl5.wav" type="audio/ogg"></audio>
+	<audio id="a3p13" src="./piezo/4noisysin.wav" type="audio/ogg"></audio>
+	<audio id="a3p14" src="./piezo/4smoothpuls.wav" type="audio/ogg"></audio>
+	<audio id="a3p15" src="./piezo/4spikes.wav" type="audio/ogg"></audio>
+	<audio id="a3p16" src="./piezo/4spikesSm.wav" type="audio/ogg"></audio>
+
+    <audio id="a3p17" src="./piezo/5click12.wav" type="audio/ogg"></audio>
+    
+
+
+	<!-- Script and Image   --> 
+	<script type="text/javascript">  
+
+	function imageButton( JQ , img ) {		
+		//$(JQ).css('background-image','url("./piezo/3camel.png")' );			// https://www.w3schools.com/csSref/css3_pr_background-size.asp		
+		$(JQ).css('background-image','url("./piezo/'+img+'")' );	
+	}
+    
+    $('#3p1').on('click', function() {   ipiezo_click( $(this)[0].id );	});			imageButton( '#3p1', '3camel.png');
+    $('#3p2').on('click', function() {   ipiezo_click( $(this)[0].id );	});			imageButton( '#3p2', '3clam.png');
+    $('#3p3').on('click', function() {   ipiezo_click( $(this)[0].id );	});			imageButton( '#3p3', '3double180.png');
+    $('#3p4').on('click', function() {   ipiezo_click( $(this)[0].id );	});			imageButton( '#3p4', '3hardsin1.png');
+    $('#3p5').on('click', function() {   ipiezo_click( $(this)[0].id );	});			imageButton( '#3p5', '3sand.png');
+    
+    $('#3p6').on('click', function() {   ipiezo_click( $(this)[0].id );	});			imageButton( '#3p6', '4cl2.png');
+    $('#3p7').on('click', function() {   ipiezo_click( $(this)[0].id );	});			imageButton( '#3p7', '4cl3.png');
+    $('#3p8').on('click', function() {   ipiezo_click( $(this)[0].id );	});			imageButton( '#3p8', '4cl4.png');
+
+    $('#3p9').on('click', function() {   ipiezo_click( $(this)[0].id );	});			imageButton( '#3p9', '4cl7.png');
+    $('#3p10').on('click', function() {   ipiezo_click( $(this)[0].id );	});			imageButton( '#3p10', '4cl8.png');
+    $('#3p11').on('click', function() {   ipiezo_click( $(this)[0].id );	});			imageButton( '#3p11', '4cl9.png');
+
+    $('#3p12').on('click', function() {   ipiezo_click( $(this)[0].id );	});			imageButton( '#3p12', '4cl5.png');
+    $('#3p13').on('click', function() {   ipiezo_click( $(this)[0].id );	});			imageButton( '#3p13', '4noisysin.png');
+    $('#3p14').on('click', function() {   ipiezo_click( $(this)[0].id );	});			imageButton( '#3p14', '4smoothpuls.png');
+    $('#3p15').on('click', function() {   ipiezo_click( $(this)[0].id );	});			imageButton( '#3p15', '4spikes.png');
+    $('#3p16').on('click', function() {   ipiezo_click( $(this)[0].id );	});			imageButton( '#3p16', '4spikesSm.png');
+
+    $('#3p17').on('click', function() {   ipiezo_click( $(this)[0].id );    });         imageButton( '#3p17', '5click12.png');
+
+
+    </script>
+
+<br><br><br>
+
+<p>
+    Piezos definetely give us much more control in designing the haptic feedback we want. The only disadvantage is the higher audible component <br>
+    and the force is relatively weaker than motors and LRAs. <br>
+    <br>
+    <img src="./imgs/Aitobutton.jpg" alt="AIto evalkit"    style="max-width: 25%; float:right; border: 10px solid white;" >
+    However it is possible with piezos to create much higher forces by optimising the mechanical design and driving them with a higher voltage. This is what Aito is doing their haptic technology. <br>
+    </p>
+    <br>
+    <br>
+
+<div id="aitodiv">
+    
+<h2 id='AITOD'>Aito Haptics</h2>
+
+<p>
+    <a href="https://aito-touch.com/solutions">Aito's haptic feedback solution</a> produces stronger forces by using the same piezos with much higher Voltages. But the short pulsed signals also sound like clicks so that the audible component is more subtle and helps to convey the illusion.<br>
+    <br>
+    <img src="./imgs/aitoEVAL.png" alt="AIto evalkit"    style="max-width: 35%; margin-left: auto; margin-right: auto; display: block;" >
+    <br>
+    <img src="./imgs/aito_A.png" alt="AIto A"    style="max-width: 10%; border: 10px solid white; float: left;" >  
+    <br><br>
+    Setting 1: demos three regular pushbutton with haptic feedback. 
+    <br><br><br><br><br><br>
+
+    <img src="./imgs/aito_B.png" alt="AIto B"    style="max-width: 10%; border: 10px solid white;  float: left;" > <br>
+    Setting 2: In designing our own waveforms Aito let's us vary the strength and sharpness of the pulse. This demo shows : 
+    <ul>
+    	<li>Left : A strong & sharp pulse </li> 
+    	<li>Middle :  A normal pulse </li> 
+    	<li>Left : A weak & soft pulse </li> 
+	</ul>
+	<br><br>
+
+	<img src="./imgs/aito_D.png" alt="AIto C"    style="max-width: 10%; border: 10px solid white;  float: left;" > <br>
+    Setting 3: Dynamic feedback 
+    <ul>
+    	<li>Left : Mainly audio feedback, reduced haptic feedback</li> 
+    	<li>Middle : When you keep pressing, repeating pulses that get slower / further apart</li> 
+    	<li>Left : When you keep pressing, repeating pulses that get softer (then sharper again)</li> 
+	</ul>
+	<br><br>
+
+    <img src="./imgs/aito_C.png" alt="AIto D"    style="max-width: 10%; border: 10px solid white;  float: left;" >
+    Setting 4: Force Touch <br>
+    The important difference is that Aito uses the piezo element to measure the force of the user pressing on the "button". So we can distinguish light and strong presses and give different feedback for them :    
+    <ul>
+    	<li>Left : Sharp feedback on light press, more dull feedback on force press and hold</li> 
+    	<li>Middle : Only force touch, no light touch</li> 
+    	<li>Left : Soft feedback on light press, sharper and stronger feedback on force press</li> 
+	</ul>
+	<br>
+
+	<h4>Additional demo's that can be loaded via the Aito Studio software : </h4>
+	200 to 400 Volt : <br>
+    Aito achieves stronger haptic forces with their piezo's by using higher Voltages. This demo shows the difference between the different Voltages.:
+    <ul>
+    	<li>Left : 200 V</li> 
+    	<li>Middle : 300 V</li> 
+    	<li>Left : 400 V</li> 
+	</ul>
+
+</p>
+
+</div>
+   
+<img src="./imgs/Aitobutton.png" alt="AIto layers"  style="max-width: 50%; margin-left: auto; margin-right: auto; display: block;" >
+    <br><br><br><br><br><br><br>
+
+
+<h2 id='DOCUMD'>Documentation</h2>
+
+<p>
+    The set-up is simple. For both LRA and piezo I am using simple pin-out eval-module that I programmed to be in audio-input mode with Arduino.<br>
+    Then connect audio signal from a jack directily from your laptop, ipad, to the IN (input) pin and ground on each module.<br>
+    </p>
+
+
+<p>
+    <h4>LRA</h4>
+    I am using the <a href="https://learn.sparkfun.com/tutorials/haptic-motor-driver-hook-up-guide"> SparkFun haptic motor driver </a> which comes with a <a href="https://github.com/sparkfun/Haptic_Motor_Driver">Arduino library on Github</a>.  I programm and power it via an Arduino Nano with this sketch, <a href="./Code/haptic_spkf_audio_ex/"> File here</a><br>
+    ( More details on the <a href="http://www.ti.com/product/DRV2605" >DRV2605 TI chip here</a> ).<br>
+    The audio signal from the jack needs to be sent through a coupling capacitor, i.e. there is a 1&mu;F capacitor between the audio pin and the board's IN pin.
+    </p>
+
+
+<h4>Piezo</h4>
+<p>
+    I am using the <a href="https://www.tindie.com/products/Fyberlabs/piezo-haptic-flex-module/"> Tindie Piezo haptic module </a> which has a corresponding  <a href="https://github.com/yurikleb/DRV2667">Arduino library on Github</a>.  I programm and power it via an Arduino Nano with this sketch, <a href="./Code/hapt_piez_audio/"> File here</a><br>
+    ( More details on the <a href="http://www.ti.com/product/drv2667" >DRV2667 TI chip here</a> )<br>
+    The audio signal does not need to be AC coupled and can be connected directly.
+    </p>
+
+<br><br><br><br><br><br><br>
+
+<script type="text/javascript">    
+
+//---
+
+var Period = 800;
+
+function ipiezo_click(me) 
+{		imultitasker( '#'+me, 'a'+me, Period);			}
+
+function piezo_click(me) 
+{       multitasker( '#'+me, '#a'+me, Period);         }
+
+///$('#3p1').css('background-image','url("./piezo/3camel.png")' );
+
+
+
+//var buzzer = $('#buzzer')[0]; 
+//var funky = $('#funky')[0];
+
+var intWav = ""; // holds wav id to play
+var intPlaying = false;
+var lastButton = "";
+var intVar;
+var interval = 800;
+
+function range_f(){
+    interval = document.getElementById('int_range').value;
+    clearInterval(intVar);   
+    intVar = setInterval(IntFunc, interval);  
+    //console.log(interval);
+    document.getElementById('v_label').innerHTML=interval;
+    document.getElementById('v_label2').innerHTML=interval;
+    //
+}
+
+function range_f2(){
+    interval = document.getElementById('int_range2').value;
+    clearInterval(intVar);   
+    intVar = setInterval(IntFunc, interval);  
+    //console.log(interval);
+    document.getElementById('v_label').innerHTML=interval;         
+    document.getElementById('v_label2').innerHTML=interval;
+    //
+}
+
+
+function IntFunc(){
+    //$(intWav).get(0).play();
+    //document.getElementById(intWav).play();
+    document.getElementById(intWav).play();        
+}
+
+// timer
+// timer plays wave TIMEWAVE
+//setInterval(IntFunc, 1000);
+
+function multitasker( ME, WAVE, PERIOD) {
+    // if not playing, play this
+    // remove '#'
+    WAVE = WAVE.slice(1,WAVE.length);   //console.log(WAVE);
+    //
+    if(!intPlaying) {
+        // play it
+        //$(myWave).get(0).play();
+        //console.log(document.getElementById(WAVE));
+        document.getElementById(WAVE).play();
+        intVar = setInterval(IntFunc, interval);
+        // color on 
+        $(ME).css('background-color','cyan');
+        intPlaying = true;
+        intWav = WAVE;
+        lastButton = ME;
+    }
+    else
+    {
+        // we were playing somehting
+        if(lastButton==ME) {
+            // this was playing -> stop
+            clearInterval(intVar);
+            ($(ME).css('background-color', 'lightgrey') );
+            intPlaying = false;
+        }
+        else
+        {
+            // something else was playing.
+            // clear and  play this instead
+            clearInterval(intVar);   
+            console.log(WAVE);
+            document.getElementById(WAVE).play();
+            intVar = setInterval(IntFunc, interval);
+            ($(lastButton).css('background-color', 'lightgrey') );
+            $(ME).css('background-color','cyan');
+            intWav = WAVE;
+            lastButton = ME;
+        }
+    }
+
+    // Eo function
+}
+
+
+
+function imultitasker( ME, WAVE, PERIOD) {
+    //var myWave = WAVE.str(1,WAVE.length);
+    var myWave = WAVE;
+    var myName = ME;
+    //console.log('#'+myName);
+    // if not playing, play this
+    if(!intPlaying) {
+        // play
+        //$(myWave).get(0).play();
+        document.getElementById(myWave).play();
+        intVar = setInterval(IntFunc, interval);
+        // color on
+        $(myName).css('color','cyan');
+        $(myName).css('border-color','cyan');
+        intPlaying = true;
+        intWav = myWave;
+        lastButton = myName;
+    }
+    else
+    {
+        // we were playing somehting
+        if(lastButton==myName) {
+            // this was playing -> stop
+            clearInterval(intVar);
+            // 
+            ($(myName).css('color', 'black') );
+            ($(myName).css('border-color', 'white') );
+            intPlaying = false;
+        }
+        else
+        {
+            // something else was playing.
+            // clear and  play this instead
+            clearInterval(intVar);   
+            //$(myWave).get(0).play();
+            document.getElementById(myWave).play();
+            intVar = setInterval(IntFunc, interval);
+            //
+            ($(lastButton).css('color', 'black') );
+            ($(lastButton).css('border-color', 'white') );
+            ($(myName).css('color', 'cyan') );
+            ($(myName).css('border-color', 'cyan') );
+            
+            intWav = myWave;
+            lastButton = myName;
+        }
+    }
+
+    // Eo function
+}
+
+
+
+</script>    
+
+
+
+</body>    
+</html>  
