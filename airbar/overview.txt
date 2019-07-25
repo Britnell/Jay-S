@@ -1,0 +1,24 @@
+		
+
+		# Airbar
+
+HID_read_test.py : 		connects to USB HID and reads data
+
+HID_read_airbar.py : 	reads data and extracts 2 touchpoints manually
+
+HID_read_airbar2.py : 	sends data to nodeserver via socketio
+
+HID_read_airbar_conf : 	sends config data to touchbar for 5 touches
+
+HID_read_airbar_conf2:	figured out the problem with touch echoes, smoothly extracting up to 5 touches
+
+airbar_conf.py :		new nametree, but essentially ...conf2
+
+airbar_conf2.py :		start tidying , functions, etc.
+
+
+
+		# Cobwebs
+
+
+X - HID_get_airbar.py : i think i tried to divide into funcitons here...
