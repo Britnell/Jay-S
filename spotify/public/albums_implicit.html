@@ -1,0 +1,75 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Spotify Playlist Analysis [Prototype]</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- <script src="../js/jquery341.min.js"></script> -->
+    <script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
+    <script src="spotify-web-api.js"></script>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+
+    <style>
+
+    	#login {
+    		color: white;
+    		font: 20px sans-serif ;
+
+    		background-color: 	blue;
+    		border: 5px solid blue;
+    		border-radius: 	10px;
+
+    		padding: 6px 10px;
+    		margin-left: 	50px;
+    		width: 15%;
+    	}
+
+    	#postlogin {
+    		font: 14px sans-serif ;
+    	}
+
+    	.playlistitem:hover {
+    		background-color: 	lawngreen;
+    		width: 20%;
+    	}
+
+       tr:hover {background-color:  #b3ffb3;} 
+
+       #playlist {
+       	 overflow-x: auto;
+       }
+
+       .bar {
+       	border-radius: 6px;
+       	background-color: darkgrey;
+       }
+
+       .pop {
+       	background-color: green;
+       }
+
+	</style>
+  </head>
+  <body >
+    <h1 > # Prototype - Spotify Playlist Analysis</h1>
+    <div id="prelogin" style="display:none">
+    	<h3>This app uses the implicit grant authorization flow to authenticate users and get user data.</h3>
+    	<div id="login" onclick="fwd_to_login()">Log-Me-In</div>
+    </div>
+    <div id="postlogin" style="display:none">
+    	<p id="subhead">
+    	subsusbu
+	    </p>
+	      <ol id="userlists"></ol>
+	      <div id="playlist">
+	      	<table id="playlisttable">
+	      	</table>
+	      </div>
+    </div>
+
+    <script src="spotify_albums.js"></script>
+  </body>
+</html>

@@ -1,0 +1,69 @@
+
+<!doctype html>
+<html lang="de">
+	<head>
+		<title>Albums.Wonday</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1 initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="revisit-after" content="1 days" />
+		<meta name="content-language" content="de" />
+		<meta name="language" content="deutsch, de" />
+
+		<script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
+
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.3/TweenMax.min.js"></script>
+
+		<style type="text/css">
+			body {
+				font-family:        courier new, courier, serif;
+				color:              black;
+				background-color:   #e0e0e0;
+				max-width: 						800px;
+				margin: 				0px auto;
+				padding-top:        0;
+				border-top:         4vw solid #000033;
+			}
+
+
+		</style>
+</head>
+<body>
+		<div class="container">
+
+			<div class="main-container">
+				<div class="header-container">
+					My alltime favourite timeless albums of all-time
+				</div>
+
+			</div>
+
+			<div>
+				<iframe src="https://open.spotify.com/embed/album/6pkQfQc58FFRwpdqOxJizg" width="300" height="300" frameborder="0" allowtransparency="true"></iframe>
+
+				<iframe src="https://open.spotify.com/embed/album/5ejEJe4Oa1crudGTbCttV9" width="300" height="300" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+			</div>
+
+		</div>
+
+		<script>
+
+		$(document).ready(function(){
+			console.log(" ###Set-up");
+
+			$('.list-div').mouseenter(function() {
+				TweenMax.to(this,0.3,{paddingLeft:20+'%'});
+			}).mouseleave(function(){
+				TweenMax.to(this,0.3,{paddingLeft:10+'%'});
+			});
+
+			// ** EO document ready
+		});
+
+
+		</script>
+
+		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+	</body>
+</html>
