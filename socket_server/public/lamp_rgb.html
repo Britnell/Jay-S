@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Socket Comms</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+
+    <!-- <script src="../hammer.js"></script> -->
+    <script src="https://hammerjs.github.io/dist/hammer.js"></script>
+
+    <style>
+        /******/
+        #square {
+            width: 100%;
+            height: 500px;
+            background-color: blue;
+            left: 0;
+            top: 0;
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <div id="square"></div>
+    
+    <script src="/socket.io/socket.io.js"></script>
+
+    <script type="text/javascript">
+
+    	// Connect
+    	var serverAddr = 'http://smartpi:8000';
+    	const socket = io(serverAddr);
+
+    	socket.on('connect', ()=>{
+    		console.log('connected to socket server ', serverAddr);
+	        socket.emit('msg', 'Hey socket im the terminal');
+	      });
+
+        socket.on('msg',(data)=>{
+            console.log(' #Recv :\t[msg] : ', data );
+        });
+
+        // **** Hamemrtime
+
+        var square = document.getElementById('square');
+        var mc = new Hammer(square);
+        mc.get('pan').set({ direction: Hammer.DIRECTION_ALL });
+
+        var lastPan =0;
+
+        mc.on("panleft panright panup pandown tap press", function(ev) {
+            console.log( ev.deltaX, ev.deltaY, ev.direction );
+            let diff = ev.deltaX - lastPan;
+            hue += diff/12;
+            if(hue<0)   hue += 360;
+            if(hue>360) hue -= 360;
+            lastPan = ev.deltaX;
+            set_color(hue/360);
+            // console.log(ev, hue);
+        });
+
+        mc.on("panend",(ev)=>{
+            console.log("END");
+            lastPan = 0;
+        });
+
+        // * Pan
+        var colour = [ 255, 0, 0 ];
+        var hue = 0;
+
+
+
+        function set_color(hue){
+            var rgb = HSVtoRGB(hue,1,1);
+            var hex = '#'+rgbToHex(rgb.r)+rgbToHex(rgb.g)+rgbToHex(rgb.b);
+            square.style.backgroundColor = hex;
+            socket.emit('lamp',{'col': [rgb.r,rgb.g,rgb.b] } );
+            // console.log(rgb, hex );
+        }
+
+        // inputs all 0 <= x <= 1
+        function HSVtoRGB(h, s, v) {
+            var r, g, b, i, f, p, q, t;
+            if (arguments.length === 1) {
+                s = h.s, v = h.v, h = h.h;
+            }
+            i = Math.floor(h * 6);
+            f = h * 6 - i;
+            p = v * (1 - s);
+            q = v * (1 - f * s);
+            t = v * (1 - (1 - f) * s);
+            switch (i % 6) {
+                case 0: r = v, g = t, b = p; break;
+                case 1: r = q, g = v, b = p; break;
+                case 2: r = p, g = v, b = t; break;
+                case 3: r = p, g = q, b = v; break;
+                case 4: r = t, g = p, b = v; break;
+                case 5: r = v, g = p, b = q; break;
+            }
+            return {
+                r: Math.round(r * 255),
+                g: Math.round(g * 255),
+                b: Math.round(b * 255)
+            };
+        }
+
+        var rgbToHex = function (rgb) { 
+          var hex = Number(rgb).toString(16);
+          if (hex.length < 2) {
+               hex = "0" + hex;
+          }
+          return hex;
+        };
+
+        set_color(hue);
+    	
+    </script>
+</body>
+</html>

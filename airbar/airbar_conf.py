@@ -172,7 +172,7 @@ if dev:
                     print "."
                     #print bin(data[4])        # ID + Touch
 
-                #print "Touch ", air['id1'] , ":\t", air['x1'], " ,\t", air['y1'], "\tS( ", air['s1'], ")"    # &0x03
+                # print "Touch ", air['id1'] , ":\t", air['x1'], " ,\t", air['y1'], "\tS( ", air['s1'], ")"    # &0x03
 
         except usb.core.USBError as e:
             # print( e)

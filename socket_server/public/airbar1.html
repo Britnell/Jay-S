@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Socket Room</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="/socket.io/socket.io.js"></script>
+
+</head>
+
+<body>
+    <h2>Socket</h2>
+    <p>paragraph</p>
+    
+    <div ><span>Fingers : </span><span id="fingers"></span></div>
+
+    <p id="posit">
+      <span id="poslab">Finger postition : </span>
+      <span id="pos"></span>
+    </p>
+
+
+    <p>
+      <span> Swipe : </span>
+      <span id="swipe"></span>
+    </p>    
+
+
+    
+      <script>
+          //console.log(`
+          const socket = io();
+
+          socket.on('connect', ()=>{
+            console.log(" Socket connected ");
+
+            socket.emit('msg', 'Hey you sockers');
+          });
+
+          socket.on('msg', (data)=>{
+            $('#console').append($('<p>').text(data));
+          });
+
+          socket.on('airbar',(data)=>{
+            // console.log(data);
+            swipes(data);
+            //
+          });
+
+          var FT = {
+            ids: [],
+            beg: [],
+            len: 0
+          };  // the Finger Tracker
+
+          function swipes(data)
+          {
+            //
+            
+            // console.log(data);
+
+            if(data[0]==0){
+              if(data[1]=='touch'){
+                //
+              }
+              else if(data[1]=='release'){
+                //
+                FT.beg=[];
+                FT.ids=[];
+                FT.len=0;
+                console.log(FT);
+              }
+            }            
+            else{
+              // Touch Data
+              for(var t=0;t<data[0];t++)
+              {
+                // for each touch
+                let touch = data[t+1];  // [ id, x, y, s ]
+                let id = touch[0];
+                let pos = { x:touch[1], y:touch[2] };
+                pos.x = 65536-pos.x;    // rev x
+                pos.x = pos.x*100/65536;
+                pos.y = pos.y*100/65536;
+
+
+                if(touch.length>1)
+                {
+                  // if too short its the release frame
+                  if(FT.ids.indexOf(id)==-1) {
+                    // New touch
+                    FT.len++;
+                    FT.ids.push(id);
+                    FT.beg.push(pos)
+                    $('#fingers')[0].textContent = '';
+                    FT.ids.forEach(function(x){
+                      $('#fingers')[0].textContent += x +' , ';
+                    });
+                  }
+                  else{
+                    // Drag
+
+                    // only for first finger
+                    if(id==FT.ids[0]){
+                      $('#pos')[0].textContent = pos.x+' , '+pos.y;
+                      var dist = [ pos.x -FT.beg[0].x , pos.y -FT.beg[0].y ];
+                      $('#swipe')[0].textContent = dist.join(' , ');
+                    }
+                  }
+                  // length check
+                }
+                else{
+                  // its a release
+                  let rel = touch[0]+1;
+                  let idx = FT.ids.indexOf(rel);
+                  FT.ids.splice(idx,1);
+                  FT.beg.splice(idx,1);
+                  $('#fingers')[0].textContent = '';
+                  FT.ids.forEach(function(x){
+                    $('#fingers')[0].textContent += x +' , ';
+                  });
+                }
+                // Eo for each touch
+              }
+            }
+
+            //   $('#console')[0].textContent = fingers.join(' , ');
+
+              // if(touch.init){
+              //   // Touch Begin
+              //   touch.id = fingers[0];
+              //   touch.dist = 0;
+              //   touch.begin = [ fingers[1], fingers[2] ];
+              //   touch.init = false;
+              //   $('#swipe')[0].textContent = [ touch.id , touch.begin[0], touch.begin[1] ].join(' , ');
+              //   // console.log(touch);
+              // }
+              // else{
+              //   // check ids
+                
+              //   // Drag
+              //   let move = [ fingers[1]-touch.begin[0] , fingers[2]-touch.begin[1]  ];
+              //   $('#drag')[0].textContent = move.join(' , ');
+              // }
+
+              // Eo touch
+              // }
+          }
+
+      </script>
+
+</body>
+</html>

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Socket Room</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="/socket.io/socket.io.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.3/TweenMax.min.js"></script>
+
+    <style type="text/css">
+      
+      #dot {
+        /*color: red;/*/
+        background-color: blue;
+        width:  20px;
+        height: 20px;
+        border-radius: 10px;
+        position: absolute;
+      }
+
+      .button {
+        background-color: grey;
+        padding: 20px;
+        border-radius: 10px;
+        position: absolute;
+        top: 200px;
+        left: 400px;
+      }
+    </style>
+</head>
+
+<body>
+    <h2>Socket</h2>
+    <p>Calibrated to screen and first box click check</p>
+    
+    <div ><span>Fingers : </span><span id="fingers"></span></div>
+
+    <p id="posit">
+      <span id="poslab">Finger postition : </span>
+      <span id="pos"></span>
+    </p>
+
+
+    <p>
+      <span> Swipe : </span>
+      <span id="swipe"></span>
+    </p>
+
+    <p>
+      <span> Console : </span>
+      <span id="cns"></span>
+    </p>
+
+    <div id='dot'>.</div>
+
+    <div class='button'>OK</div>    
+    
+      <script>
+          //console.log(`
+          const socket = io();
+
+          socket.on('connect', ()=>{
+            console.log(" Socket connected ");
+
+            socket.emit('msg', 'Hey you sockers');
+          });
+
+          socket.on('msg', (data)=>{
+            $('#console').append($('<p>').text(data));
+          });
+
+          socket.on('airbar',(data)=>{
+            // console.log(data);
+            swipes(data);
+            //
+          });
+
+          var FT = {
+            ids: [],
+            beg: [],
+            len: 0
+          };  // the Finger Tracker
+
+          function swipes(data)
+          {
+            //
+            
+            // console.log(data);
+
+            if(data[0]==0){
+              if(data[1]=='touch'){
+                //
+              }
+              else if(data[1]=='release'){
+                //
+                FT.beg=[];
+                FT.ids=[];
+                FT.len=0;
+                console.log(FT);
+              }
+            }            
+            else{
+              // Touch Data
+              for(var t=0;t<data[0];t++)
+              {
+                // for each touch
+                let touch = data[t+1];  // [ id, x, y, s ]
+                let id = touch[0];
+                let pos = { x:touch[1], y:touch[2] };
+                pos.x = 65536-pos.x;    // rev x
+                pos.x = pos.x*100/65536;
+                pos.y = pos.y*100/65536;
+                pos.x = Math.round(pos.x*10)/10;
+                pos.y = Math.round(pos.y*10)/10;
+
+                if(touch.length>1)
+                {
+                  // if too short its the release frame
+                  if(FT.ids.indexOf(id)==-1) {
+                    // New touch
+                    FT.len++;
+                    FT.ids.push(id);
+                    FT.beg.push(pos)
+                    $('#fingers')[0].textContent = '';
+                    FT.ids.forEach(function(x){
+                      $('#fingers')[0].textContent += x +' , ';
+                    });
+                  }
+                  else{
+                    // Drag
+
+                    // only for first finger
+                    if(id==FT.ids[0])
+                    {
+                      // Debug
+                      $('#pos')[0].textContent = pos.x+' , '+pos.y;
+                      var dist = [ pos.x -FT.beg[0].x , pos.y -FT.beg[0].y ];
+                      $('#swipe')[0].textContent = dist.join(' , ');
+
+                      // Dot
+                      let dot = [ scale(pos.x,0,100, 20,1200) , scale(pos.y,0,95, 0,1010) ];
+                      dot[0] = Math.round(dot[0]);        dot[1] = Math.round(dot[1]);
+                      // move & print
+                      TweenMax.set('#dot',{ left:dot[0] , top:dot[1] } );
+                      $('#cns')[0].textContent = ' dot : '+dot.join(' , . ');
+
+                      // Button check
+                      let B = $('.button')[0].getBoundingClientRect();
+                      let F = $('#dot')[0].getBoundingClientRect();
+                      // Center of Dot if( (F.x+F.width/2)>=B.x && F.x<=(B.x+B.width) && (F.y+F.height/2)>=B.y && F.y<=(B.y+B.height)){
+                      if( (F.x+F.width)>=B.x && F.x<=(B.x+B.width) && (F.y+F.height)>=B.y && F.y<=(B.y+B.height)){ // Dot touching
+                        $('.button')[0].style.backgroundColor='red';
+                      }
+                      else{
+                        $('.button')[0].style.backgroundColor='grey';
+                      }
+                    }
+                  }
+                  // length check
+                }
+                else{
+                  // its a release
+                  let rel = touch[0]+1;
+                  let idx = FT.ids.indexOf(rel);
+                  FT.ids.splice(idx,1);
+                  FT.beg.splice(idx,1);
+                  $('#fingers')[0].textContent = '';
+                  FT.ids.forEach(function(x){
+                    $('#fingers')[0].textContent += x +' , ';
+                  });
+                }
+                // Eo for each touch
+              }
+            }
+
+              // Eo Swipes
+          }
+
+          function scale(x,imin,imax,omin,omax){
+            var prop = ( (x-imin)/(imax-imin) );
+            var res = prop * (omax-omin) + omin;
+            return res;
+          }
+
+      </script>
+
+</body>
+</html>

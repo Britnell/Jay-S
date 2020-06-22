@@ -69,8 +69,8 @@ def socket_msg(*args):
 class NetConn():
     socket = None
     def __init__(self):
-        serverName = 'MUL00175'  # 'MUL00175'     'nodeserver'   '192.168.86.127'
-        serverPort = 3000
+        serverName = 'localhost'  # 'MUL00175'     'nodeserver'   '192.168.86.127'
+        serverPort = 8000
         print "Connecting socket ", serverName, ":", serverPort
         self.socket = SocketIO(serverName, serverPort, LoggingNamespace)
         self.socket.on('connect', on_connect)

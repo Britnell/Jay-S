@@ -30,6 +30,8 @@
 
 """
 
+socket_disable = False
+
 import usb.core
 import usb.util
 import sys
@@ -37,6 +39,7 @@ from time import sleep
 
 
 #        ***        Socket IO
+
 import logging, thread
 from socketIO_client import SocketIO, LoggingNamespace
 
@@ -47,7 +50,7 @@ def on_connect():
     global socketReady
     socketReady = True
     print ("Connected to server!!!")
-    socketIO.emit('msg', 'OH HELLO. YES. ITS ME. ')
+    socketIO.emit('msg', 'Hey. Its me, airbar. ')
     print ("commsReady "+str(socketReady))
 
 def on_disconnect():
@@ -66,8 +69,8 @@ def socket_msg(*args):
 class NetConn():
     socket = None
     def __init__(self):
-        serverName = 'MUL00175'  # 'MUL00175'     'nodeserver'   '192.168.86.127'
-        serverPort = 3000
+        serverName = 'localhost'  # 'MUL00175'     'nodeserver'   '192.168.86.127'
+        serverPort = 8000
         print "Connecting socket ", serverName, ":", serverPort
         self.socket = SocketIO(serverName, serverPort, LoggingNamespace)
         self.socket.on('connect', on_connect)
@@ -76,20 +79,18 @@ class NetConn():
         self.socket.on('msg', socket_msg )
 
 
-def thread_client(socketT):
-    #global socketIO
-    #socketIO.wait()
-    socketT.wait()
+def thread_client(socketThr):
+    socketThr.wait()
 
-#client = NetConn()
-#socketIO = client.socket
-client = NetConn()
-socketIO = client.socket
-try:
-    thread.start_new_thread(thread_client, (socketIO,) ) 
-    print "Socket thread started. "
-except Exception as err:
-    print " # THREAD ERROR: ", err
+socketIO = None
+if not socket_disable:
+    client = NetConn()
+    socketIO = client.socket
+    try:
+        thread.start_new_thread(thread_client, (socketIO,) ) 
+        print "Socket thread started. "
+    except Exception as err:
+        print " # THREAD ERROR: ", err
 
 
 #        ***        Functions
@@ -178,12 +179,14 @@ if dev:
     airbar_send_config( cfg_data )
 
     # * Lets Begin 
-    print(" \nLet's begin \n")
+    print(" \nRight now, let's begin \n")
 
+    
+    timeout = 11
     touching = False
-
+    first_touch = True
+        
     while True:
-        timeout = 11
         try:
             data = dev.read(endpoint.bEndpointAddress,endpoint.wMaxPacketSize, timeout )
             # print( "HID read : " , len(data)) 
@@ -197,46 +200,46 @@ if dev:
                 #touches.append(timestamp)
                 aix = 4 # for shifting index of touch data
 
-                for x in range(no_touches):
-                    air = {}
-                    air['id'] = data[aix]    ## ID & release
+                if no_touches is 1 and data[aix]%2==0:
+                    # ** NO TOUCHES
+                    #print "NO Touches : ", data[aix]
+                    #touches.append(0)
+                    socketIO.emit('airbar', [0, 'release'] )
+                    first_touch = False
 
-                    if air['id'] % 2 is 1 :     # uneven ID = touch
-                        #print "\t",  air['id'] , " is in array ",  int_in_array( air['id'], touches ) 
-                        #if not int_in_array( air['id'], touches ) :
-                        air['x'] = ( data[aix+2] <<8) +data[aix+1]
-                        air['y'] = ( data[aix+4] <<8) +data[aix+3]
-                        air['s'] = data[aix+5] + (data[aix+6]<<8)
-                    touches.append( air) 
-                    aix += 9
+                else:
+                    if not first_touch:
+                        socketIO.emit('airbar', [0, 'touch'] )
+                        first_touch = True
 
-                if socketIO:
-                    socketIO.emit('airbar', touches )
+                    # ** SEND TOUCHES
+                    touches.append(no_touches)
 
-                if True:    
-                    # * print touches dic
-                    for dic in touches:
-                        print str(dic ), "\t ",
-                    print "."
+                    for x in range(no_touches):
+                        air = []
+                        air.append(data[aix])    # 'id' = 0
 
-                if False:
-                    # * print data array tabs
-                    if len(data) > 10:
-                        for x in range(0, 30):        #len(data) ):
-                            print data[x],"\t",
-                    print "\n" # " .", len(data)
+                        if air[0] % 2 is 1 :     # uneven ID = touch
+                            #print "\t",  air['id'] , " is in array ",  int_in_array( air['id'], touches ) 
+                            #if not int_in_array( air['id'], touches ) :
+                            
+                            air.append( ( data[aix+2] <<8) +data[aix+1] )   # 'x' = 1
+                            air.append( ( data[aix+4] <<8) +data[aix+3] )   # 'y' = 2
+                            air.append( data[aix+5] + (data[aix+6]<<8) )    # 's' = 3
+
+                        touches.append( air) 
+                        aix += 9
+
+                    if no_touches > 0:
+                        # ** Send via Socket
+                        if socketIO:
+                            #print 'airbar packet : ', touches
+                            socketIO.emit('airbar', touches )
+
                 
-                if False:
-                    # * indiv. dict
-                    for tag in air:
-                        print tag ,": ", air[tag], "\t",
-                    print "."
-                    #print bin(data[4])        # ID + Touch
-
-                #print "Touch ", air['id1'] , ":\t", air['x1'], " ,\t", air['y1'], "\tS( ", air['s1'], ")"    # &0x03
             #sleep(0.005)
         except usb.core.USBError as e:
-            print( e)
+            #print( e)
             e = ""
 
 

@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Socket Room</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="/socket.io/socket.io.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.3/TweenMax.min.js"></script>
+
+    <style type="text/css">
+      
+      body{
+        background-color: black;
+        color: white;
+      }
+
+      #console{
+        background-color: white;
+        width:  350px;
+        height: 300px;
+        padding: 10px;
+        color: black;
+      }
+
+      #dot {
+        /*color: red;/*/
+        background-color: blue;
+        width:  20px;
+        height: 20px;
+        border-radius: 10px;
+        position: absolute;
+        z-index: 5;
+      }
+
+      .button {
+        background-color: grey;
+        padding: 20px;
+        border-radius: 10px;
+        position: absolute;
+        top: 200px;
+        left: 400px;
+      }
+
+      .container{
+        position: absolute;
+        background-color: lightblue;
+        border: 2px blue;
+        width: 300px;
+        height: 300px;
+      }
+
+      .darkskysmall{
+        height: 150px;
+        left: 20px;
+        top: 20px;
+      }
+
+      .darkskylarge {
+        width: 500px;
+        height: 100px;        
+
+        left: 20px;
+        top: -400px;
+      }
+
+      .windymap {
+        top: 20px;
+        left: 600px;        
+      }
+
+      .calendar{
+        left: 600px;
+        top: 40px; 
+      }
+    </style>
+</head>
+
+<body>
+    
+    <div id="console" hidden>
+        <div ><span>Fingers : </span><span id="fingers"></span></div>
+
+        <p id="posit">
+          <span id="poslab">Finger postition : </span>
+          <span id="pos"></span>
+        </p>
+
+
+        <p>
+          <span> Swipe : </span>
+          <span id="swipe"></span>
+        </p>
+
+        <p>
+          <span> Console : </span>
+          <span id="cns"></span>
+        </p>
+    </div>
+
+    <div id='dot'>.</div>
+
+    <div class='button'>OK</div>    
+    
+    <div class='container darkskysmall'> 
+        <script type='text/javascript' src='https://darksky.net/widget/small/48.1035,11.7786/uk12/en.js?width=100%&height=150&title=Das Wetter&textColor=ffffff&bgColor=000000&transparency=false&skyColor=undefined&fontFamily=Trebuchet MS&customFont=&units=us'></script>
+    </div>
+
+    <div class='container darkskylarge'> 
+        <script type='text/javascript' src='https://darksky.net/widget/graph-bar/48.1035,11.7786/ca12/en.js?width=100%&height=400&title=Full Forecast&textColor=ffffff&bgColor=000000&transparency=false&skyColor=undefined&fontFamily=Default&customFont=&units=ca&timeColor=6f8d9d&tempColor=e0823f&currentDetailsOption=true'></script>
+    </div>
+
+    <!-- <div class='container windymap'>
+          <iframe width="650" height="450" src="https://embed.windy.com/embed2.html?lat=46.755&lon=11.689&zoom=6&level=surface&overlay=radar&menu=&message=true&marker=&calendar=24&pressure=&type=map&location=coordinates&detail=&detailLat=48.098&detailLon=11.779&metricWind=default&metricTemp=default&radarRange=-12" frameborder="0"></iframe> 
+    </div> -->
+
+    <div class='container calendar' hidden>
+          <iframe src="https://calendar.google.com/calendar/embed?height=600&amp;wkst=1&amp;bgcolor=%23ffffff&amp;ctz=Europe%2FBerlin&amp;src=dG9tbXkuYnJpdG5lbGxAZ29vZ2xlbWFpbC5jb20&amp;src=YWRkcmVzc2Jvb2sjY29udGFjdHNAZ3JvdXAudi5jYWxlbmRhci5nb29nbGUuY29t&amp;src=MjdhdTI0czRibWo4Z2VpNGI1MzhxdHQ4MmtAZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ&amp;src=NG9rOThwOWVrbW0xaDk5Zm9jdjM2NG52a29AZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ&amp;color=%239D7000&amp;color=%23336699&amp;color=%23329262&amp;color=%239F3501" style="border-width:0" width="700" height="500" frameborder="0" scrolling="no"></iframe>
+    </div>
+    <!-- https://www.ventusky.com/ -->
+    <!-- https://www.weather-forecast.com/maps/Germany -->
+    <!-- https://openweathermap.org/weathermap -->
+      <script>
+          //console.log(`
+          const socket = io();
+
+          socket.on('connect', ()=>{
+            console.log(" Socket connected ");
+
+            socket.emit('msg', 'Hey you sockers');
+          });
+
+          socket.on('msg', (data)=>{
+            $('#console').append($('<p>').text(data));
+          });
+
+          socket.on('airbar',(data)=>{
+            // console.log(data);
+            swipes(data);
+            //
+          });
+
+          var FT = {
+            ids: [],
+            beg: [],
+            len: 0
+          };  // the Finger Tracker
+
+          function swipes(data)
+          {
+            //
+            
+            // console.log(data);
+
+            if(data[0]==0){
+              if(data[1]=='touch'){
+                //
+              }
+              else if(data[1]=='release'){
+                // console.log(' RELEASE ');
+                FT.beg=[];
+                FT.ids=[];
+                FT.len=0;
+                unbounce.release = false;
+                unbounce.weatherwidgetclick = false;
+                unbounce.weatherdetailclick = false;
+              }
+            }            
+            else{
+              // Touch Data
+              for(var t=0;t<data[0];t++)
+              {
+                // for each touch
+                let touch = data[t+1];  // [ id, x, y, s ]
+                let id = touch[0];
+                let pos = { x:touch[1], y:touch[2] };
+                pos.x = 65536-pos.x;    // rev x
+                pos.x = pos.x*100/65536;
+                pos.y = pos.y*100/65536;
+                pos.x = Math.round(pos.x*10)/10;
+                pos.y = Math.round(pos.y*10)/10;
+
+                if(touch.length>1)
+                {
+                  // if too short its the release frame
+                  if(FT.ids.indexOf(id)==-1) {
+                    // New touch
+                    FT.len++;
+                    FT.ids.push(id);
+                    FT.beg.push(pos)
+                    $('#fingers')[0].textContent = '';
+                    FT.ids.forEach(function(x){
+                      $('#fingers')[0].textContent += x +' , ';
+                    });
+                  }
+                  else{
+                    // Drag
+
+                    // only for first finger
+                    if(id==FT.ids[0])
+                    {
+                      // Debug
+                      $('#pos')[0].textContent = pos.x+' , '+pos.y;
+                      var dist = [ pos.x -FT.beg[0].x , pos.y -FT.beg[0].y ];
+                      $('#swipe')[0].textContent = dist.join(' , ');
+
+                      // Dot
+                      let dot = [ scale(pos.x,0,100, 20,1200) , scale(pos.y,0,95, 0,1010) ];
+                      dot[0] = Math.round(dot[0]);        dot[1] = Math.round(dot[1]);
+                      // move & print
+                      TweenMax.set('#dot',{ left:dot[0] , top:dot[1] } );
+                      $('#cns')[0].textContent = ' dot : '+dot.join(' , . ');
+
+                      // Button check
+                      let weatherDiv = $('.darkskysmall')[0];
+                      let weatherDetailDiv = $('.darkskylarge')[0].childNodes[2]; 
+                      // $('#ds_b6a19c71b52936a270a99f35b8be4381')[0];
+                      // $('.darkskylarge')[0];
+
+
+                      // * Weather widget
+                      
+                      
+                      // only one click per touch
+                      if(!unbounce.release)
+                      if(check_click(weatherDiv, dot))
+                      {
+                          if(!unbounce.weatherwidgetclick){
+                            unbounce.release = true;
+                            unbounce.weatherwidgetclick = true;
+                            if(!unbounce.weatherdetailshow){
+                              show_weather_detail();
+                              unbounce.weatherdetailshow = true;
+                            }
+                          }
+                      }
+                      else{
+                          unbounce.weatherwidgetclick = false;
+                      }
+                      
+                      // * Weather Detail
+                      if(!unbounce.release)
+                      if(check_click(weatherDetailDiv, dot))
+                      {
+                          if(!unbounce.weatherdetailclick){
+                            unbounce.release = true;
+                            unbounce.weatherdetailclick = true;
+                            if(unbounce.weatherdetailshow){
+                              hide_weather_detail();
+                              unbounce.weatherdetailshow = false;
+                            }
+                          }
+                      }
+                      else{
+                          unbounce.weatherdetailclick = false;
+                      }
+
+                      // --
+                    }
+                  }
+                  // length check
+                }
+                else{
+                  // its a release
+                  let rel = touch[0]+1;
+                  let idx = FT.ids.indexOf(rel);
+                  FT.ids.splice(idx,1);
+                  FT.beg.splice(idx,1);
+                  $('#fingers')[0].textContent = '';
+                  FT.ids.forEach(function(x){
+                    $('#fingers')[0].textContent += x +' , ';
+                  });
+                }
+                // Eo for each touch
+              }
+            }
+
+              // Eo Swipes
+          }
+
+          var unbounce = {};
+          unbounce.weatherwidgetclick = false;
+          unbounce.weatherdetailclick = false;
+          unbounce.weatherdetailshow = false;
+          unbounce.release = false;
+
+          window.onload = function(){
+            //
+          }
+
+          function show_weather_detail(){
+            TweenMax.set('.darkskylarge',{   left:20, top:-400 });
+            TweenMax.to('.darkskylarge',2,{  left:20, top: 0     });
+          }
+          function hide_weather_detail(){
+            TweenMax.to('.darkskylarge',2,{  left:20, top: -400  });
+          }
+
+          function check_click(div, click)
+          {
+            let B = div.getBoundingClientRect();
+            // let F = { x:click.x, y:click.y, width: 10, height:10 };
+            let F = { x:click[0], y:click[1], width: 10, height:10 };
+
+            if( (F.x+F.width)>=B.x && F.x<=(B.x+B.width) && (F.y+F.height)>=B.y && F.y<=(B.y+B.height)){ // Dot touching
+              // $('.button')[0].style.backgroundColor='red';
+              return true;
+            }
+            else{
+              // $('.button')[0].style.backgroundColor='grey';
+              return false;
+            }
+          }
+
+          function scale(x,imin,imax,omin,omax){
+            var prop = ( (x-imin)/(imax-imin) );
+            var res = prop * (omax-omin) + omin;
+            return res;
+          }
+
+      </script>
+
+</body>
+</html>
