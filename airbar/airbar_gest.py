@@ -35,6 +35,7 @@ socket_disable = True
 import usb.core
 import usb.util
 import sys
+import math
 from time import sleep
 
 
@@ -140,6 +141,196 @@ def airbar_send_config( cfg_data ):
 
 
 
+def airbar_loop():
+    first_touch = True
+        
+    while True:
+        try:
+            data = dev.read(endpoint.bEndpointAddress,endpoint.wMaxPacketSize, timeout )
+
+            if len(data) > 2 :
+                
+                # ** SEND TOUCHES
+
+                no_touches = data[1]                
+                timestamp = ( data[3] <<8) +data[2]
+                touches=[ no_touches, timestamp ]
+
+                aix = 4 # for shifting index of touch data
+                for x in range(no_touches):
+                    air = []
+                    air.append(data[aix])    # 'id' = 0
+
+                    if air[0] % 2 is 1 :     # uneven ID = touch
+                        air.append( ( data[aix+2] <<8) +data[aix+1] )   # 'x' = 1
+                        air.append( ( data[aix+4] <<8) +data[aix+3] )   # 'y' = 2
+                        air.append( data[aix+5] + (data[aix+6]<<8) )    # 's' = 3
+                    touches.append( air) 
+                    aix += 9
+
+                if no_touches > 0:
+                    # ** Send via Socket
+                    # if socketIO:                            socketIO.emit('airbar', touches )
+                    if first_touch:
+                    	airbar_begin(touches)
+                    	first_touch = False
+                    else:
+                    	airbar_touch( touches )
+
+                # release
+                if no_touches is 1 and data[4]%2==0:
+                    first_touch = True
+                
+            #sleep(0.005)
+        except usb.core.USBError as e:
+            # print e
+            e = ""
+
+class Touch:
+	def __init__(self, id ):
+		self.id = id
+		self.x = 0
+		self.y = 0
+		self.px = 0
+		self.py = 0
+		self.dx = 0
+		self.dy = 0
+		self.totalx = 0
+		self.totaly = 0
+
+touches = {}
+one_finger = { 'pan': [0,0] }
+two_finger = { }
+fingers = []
+
+def airbar_begin(data):
+	global one_finger, two_finger
+
+	one_finger['pan'] = [0,0]
+	two_finger['pan'] = [0,0]
+
+	for x in range(data[0]):
+		touch = data[2+x]
+		id = touch[0]
+		touches[id] = Touch(id) # key 
+		touches[id].px = touch[1]
+		touches[id].py = touch[2]
+
+	print 'Begin ' 
+
+
+
+def airbar_touch(data):
+	global fingers
+
+	# print 'touch data \t', data 
+
+	for x in range(data[0]):
+		touch = data[2+x]
+		id = touch[0]
+		if id%2 ==0 :
+			id+=1
+			# even : release
+			# remove from touches
+			if (id) in touches:
+				touches.pop(id)	
+		else:
+			# odd : touch
+			if id not in touches:
+				# add if new
+				touches[id] = Touch(id)
+				touches[id].px = touch[1]
+				touches[id].py = touch[2]
+
+			# update touch object
+			touches[id].x = touch[1]
+			touches[id].y = touch[2]
+			touches[id].dx = touches[id].x-touches[id].px
+			touches[id].dy = touches[id].y-touches[id].py
+			touches[id].totalx += touches[id].dx 
+			touches[id].totaly += touches[id].dy
+			touches[id].px = touches[id].x
+			touches[id].py = touches[id].y
+
+	# check change of fingers
+	finger_change = not check_fingers(fingers,touches)
+	
+	# update fingers array
+	fingers=[]
+	for touch in touches.values():
+		fingers.append(touch.id)
+
+	# run gesture recognition
+	gestures(touches,finger_change)
+
+	if len(touches) == 0:
+		print ' release '
+
+def airbar_release(data):
+	# if socketIO: # 	socketIO.emit('airbar', [0, 'release'] )
+	print ' release ', data 
+
+def check_fingers(fingers,touches):
+	identical = True
+	if len(touches) != len(fingers):
+		identical = False
+	else:
+		for f in fingers:
+			if f not in touches:
+				identical = False
+	return identical
+
+
+def gestures(touches, change):
+	global one_finger, two_finger
+
+	L = len(touches)
+	if L is 1:		
+		# - - - - - pan
+		touch = touches.values()[0]
+		one_finger['pan'][0] += touch.dx
+		one_finger['pan'][1] += touch.dy
+
+		print ' one finger :  pan ', [touch.dx, touch.dy], '\t > ',  one_finger['pan']
+
+	elif L is 2:
+		
+		A = touches.values()[0]
+		B = touches.values()[1]
+		
+		if change:
+			# first time two fingers / different fingers
+			print '\t# #  reset ! '
+			two_finger['pan'] = [0,0]
+			touches.values()[0].totalx = 0
+			touches.values()[0].totaly = 0
+			touches.values()[1].totalx = 0
+			touches.values()[1].totaly = 0
+
+		# * total diff
+		# print ' two_finger : ', [A.x, A.y], [B.x,B.y] 
+		dist = abs( A.x-B.x) + abs(A.y-B.y)
+		diff = [A.totalx-B.totalx , A.totaly-B.totaly ]
+		if A.totalx != 0 and A.totaly != 0 :
+			# compare magnitudes ?
+			ratio = 0.0 * ( abs(diff[0])+abs(diff[1]) ) / ( abs(A.totalx) + abs(A.totaly) )
+
+			print ' total diff ', diff 
+			
+
+		# * by angle
+		a = math.atan2(A.dx,A.dy)
+		b = math.atan2(B.dx,B.dy)
+		angleDiff = math.floor( (a-b)*1000) / 1000
+		# if angleDiff > 0.3:
+		# 	print ' Two finger : \t diff ', '\t : ', angleDiff	
+		
+
+		#print ' Two finger : \t diff ', '\t : ', angleDiff
+
+		#print [ A.dx,A.dy] , [B.dx,B.dy]
+		#print [ A.totalx, A.totaly ], [B.totalx, B.totaly], diff
+		
 
 #       ***         Setup USB HID connection
 
@@ -182,74 +373,12 @@ if dev:
     # * Lets Begin 
     print(" \nRight now, let's begin \n")
 
-    
     timeout = 11
-    touching = False
-    first_touch = True
-        
-    while True:
-        try:
-            data = dev.read(endpoint.bEndpointAddress,endpoint.wMaxPacketSize, timeout )
-            # print( "HID read : " , len(data)) 
+    
+    airbar_loop()
+else:
+	print(' no matching HID device found ')
 
-            if len(data) > 2 :
-                #----
-                no_touches = data[1]                
-                timestamp = ( data[3] <<8) +data[2]
-
-                touches=[]
-                #touches.append(timestamp)
-                aix = 4 # for shifting index of touch data
-
-                if no_touches is 1 and data[aix]%2==0:
-                    # ** NO TOUCHES
-                    #print "NO Touches : ", data[aix]
-                    #touches.append(0)
-                    if socketIO: 
-                    	socketIO.emit('airbar', [0, 'release'] )
-                    else:
-                    	print( 'release ')
-                    first_touch = False
-
-                else:
-                    if not first_touch:
-                    	if socketIO: 
-                        	socketIO.emit('airbar', [0, 'touch'] )
-                        else:
-                        	print(' touch ')
-                        first_touch = True
-
-                    # ** SEND TOUCHES
-                    touches.append(no_touches)
-
-                    for x in range(no_touches):
-                        air = []
-                        air.append(data[aix])    # 'id' = 0
-
-                        if air[0] % 2 is 1 :     # uneven ID = touch
-                            #print "\t",  air['id'] , " is in array ",  int_in_array( air['id'], touches ) 
-                            #if not int_in_array( air['id'], touches ) :
-                            air.append( ( data[aix+2] <<8) +data[aix+1] )   # 'x' = 1
-                            air.append( ( data[aix+4] <<8) +data[aix+3] )   # 'y' = 2
-                            air.append( data[aix+5] + (data[aix+6]<<8) )    # 's' = 3
-                        else:
-                        	air.append('release')
-                        touches.append( air) 
-                        aix += 9
-
-                    if no_touches > 0:
-                        # ** Send via Socket
-                        if socketIO:
-                            #print 'airbar packet : ', touches
-                            socketIO.emit('airbar', touches )
-                        else:
-                        	print( touches )
-
-                
-            #sleep(0.005)
-        except usb.core.USBError as e:
-            #print( e)
-            e = ""
 
 
 
