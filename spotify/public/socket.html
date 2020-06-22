@@ -1,0 +1,49 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Socket</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    
+    <script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
+
+    <script src="/socket.io/socket.io.js"></script>
+
+    <!-- <script src="https://d3js.org/d3.v5.min.js"></script> -->
+
+    <style>
+    	/* */
+
+	</style>
+  </head>
+  <body >
+  	Uh Ah. Socket-to-me-like-you-want-me-to.io
+  	
+  	<div id='console'></div>
+
+  	<script>
+  		const socket = io();
+  		socket.on('connect', ()=>{
+            console.log(" SOCKET CONNECTED ");
+            socket.emit('msg', 'hi socket its browser here');
+            
+          });
+  		socket.on('disconnect',()=>{
+            console.log(" !    !    ! DIS - CONNECTED ");
+          });
+  		socket.on('msg',(data)=>{
+            console.log(' socket-msg : ', data );
+            // 1 - document.getElementById('console').textContent += data +'<br>';
+            let line = document.createElement('div');
+            line.textContent = data;
+            document.getElementById('console').appendChild(line);
+          });
+
+
+
+  	</script>
+  </body>
+</html>
