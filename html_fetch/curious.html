@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <title>Curiosities</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <style>
+      #container {
+        position: absolute;
+      }
+
+      body {
+        /* background-color: #4a4a4a; */
+        margin: 0;
+        font-family: "Century Gothic", sans-serif;
+      }
+
+      #iframe {
+        width: 80%;
+        margin-left: 10%;
+        height: 90vh;
+      }
+
+      #banner {
+        text-align: center;
+        padding: 10px 0px 10px 0px; /* top right bottom left */
+        background-color: #4a4a4a;
+      }
+
+      #top {
+        margin: 8px;
+        font-size: 20px;
+      }
+
+      #clickbutton {
+        margin: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="banner">
+      <div id="top">Curiosities</div>
+      <div>
+        Unusual articles from
+        <a href="https://en.wikipedia.org/wiki/Wikipedia:Unusual_articles"
+          >the vaults of Wikipedia</a
+        >
+      </div>
+      <button id="clickbutton" type="button">New article</button>
+    </div>
+    <iframe id="iframe" src="" title="Wikipedia articles of curiosity"></iframe>
+    <script src="links.js"></script>
+    <script src="curious.js"></script>
+  </body>
+</html>

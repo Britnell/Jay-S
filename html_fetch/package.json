@@ -1,0 +1,16 @@
+{
+  "name": "html_fetch",
+  "version": "1.0.0",
+  "description": "",
+  "main": "wiki_fetch.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "linebyline": "^1.3.0",
+    "node-fetch": "^2.6.0",
+    "node-html-parser": "^1.2.19"
+  }
+}
