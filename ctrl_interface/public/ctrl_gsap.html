@@ -1,0 +1,348 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Berp</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
+
+
+    <!-- <script src='https://s3-us-west-2.amazonaws.com/s.cdpn.io/16327/gsap-latest-beta.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/gsap/1.20.2/TweenMax.min.js'></script>
+     -->
+    <script src='/static/gsap.min.js'></script>
+    <script src='/static/Draggable.min.js'></script>
+    
+
+    <!-- <script type="text/javascript" src="/static/gsap-core.js"></script>
+    <script type="text/javascript" src="/static/Draggable.js"></script> -->
+
+    <!-- <script src="https://d3js.org/d3.v5.min.js"></script> -->
+
+    <style>
+
+      #gridcontainer {
+        width: 90%;
+        margin-left: 5%;
+
+        height: 600px;
+        margin-top: 50px;
+
+        background-color: lightgrey;
+
+        position:relative;
+      }
+
+      #shelf {
+        width: 100px;
+
+        /*padding: 8px;*/
+
+        /*border: 2px blue solid;        border-radius: 8px;*/
+        
+        background-color: lightblue;
+
+        position: absolute;
+      }
+      #last_shelf {
+        width: 100px;
+        
+        background-color: #909090;
+
+        position: absolute;
+      }
+      #button {
+        font-size: 30px;
+        border: 2px lightblue solid;
+        border-radius: 8px;
+        background-color: lightblue;
+        padding: 10px;
+        display: inline-block;
+
+        margin-left: 300px;
+        margin-top: 20px;
+
+      }
+
+
+
+
+	 </style>
+
+
+  </head>
+<body >
+  <div class="container">
+
+    
+    <div id="gridcontainer">
+      
+    	<div id="shelf"></div>
+      <div id="last_shelf"></div>
+    </div>
+
+    <div id="controlcontainer">
+      <button type="button" id="button" onclick="submit_button()">Move Shelf</button>
+    </div>
+
+    <div id="pathcontainer"></div>
+
+
+
+  </div>
+
+
+<script>
+
+  /*    Draggable  
+  *     https://greensock.com/docs/v2/Utilities/Draggable
+  */
+
+  var snappoints = [];
+  var NX = 16, NY = 12;
+  var GRDS;   // grid size
+  var drag;
+
+  // rot-ration = 0 or 90 degree
+  var last_position = { screenX:2, screenY:1, gridX:2 ,gridY:1 ,rot: 0 };
+  var facing = 'H';
+
+  var route_line;
+
+  //      *****     onload
+
+  window.onload = function(){
+    // calc grid
+    var grid = $('#gridcontainer')[0];
+    
+    let wx = Math.round( grid.clientWidth  / NX /5 ) *5;
+    let wy = Math.round( grid.clientHeight / NY /5 ) *5;
+
+    if(wx<wy)
+      GRDS = wx;
+    else
+      GRDS = wy;
+
+    let startX = GRDS*1+1;
+    let startY = GRDS*1+1;
+    gsap.set($('#gridcontainer'),{ width: NX*GRDS, height: NY*GRDS });
+    gsap.set($('#shelf'),{ width: 3*GRDS-1, height: GRDS-1, x: startX , y: startY, 'zIndex': 2000 });
+    gsap.set($('#last_shelf'),{ width: 3*GRDS-1, height: GRDS-1, x: GRDS*1+1 , y: GRDS*1+1 });
+
+    last_position.screenX = gsap.getProperty('#shelf','x');
+    last_position.screenY = gsap.getProperty('#shelf','x');
+
+    // console.log(" grid size : ", GRDS );
+    // console.log(' grid container : ', [grid.clientWidth, grid.clientHeight] );
+    
+    for(let y=0; y<NY; y++){
+      for(let x=0; x<NX; x++){
+        $("<div/>").css({position:"absolute", border:"1px solid #454545", width:GRDS-1, height:GRDS-1, top:y*GRDS, left:x*GRDS}).prependTo($('#gridcontainer'));
+      }
+    }
+    
+    drag = Draggable.create("#shelf",
+    {
+      type: "x,y" ,
+      // edgeResistance: 0.65,
+      bounds: $('#gridcontainer'),
+      liveSnap: true,
+      onClick: function(){
+        let d = millis()-last_click;
+        // console.log(' click ', d );
+        if(d<500){
+          let rot = gsap.getProperty('#shelf','rotation');
+          if(rot==0)
+            gsap.to('#shelf',{ duration: 0.8, rotation: -90 });
+          else
+            gsap.to('#shelf',{ duration: 0.8, rotation: 0 });
+          // console.log( ' shelf : ', $('#shelf')[0] );
+        }
+        else{
+          // console.log(' single ')
+        }
+        last_click = millis();
+      },
+      snap: 
+      {
+        x: function(endValue){    return Math.round(endValue/GRDS) * GRDS +1;   },
+        y: function(endValue){    return Math.round(endValue/GRDS) * GRDS +1;   } 
+      },
+      // onDragStart , OnDragEnd
+      onDragEnd: function(pointerEvent){
+        // goal
+        let goal = { screenX: drag[0].endX, screenY:drag[0].endY }; // start
+        goal.gridX = Math.round(goal.screenX/GRDS) +1; // +1 for center pos
+        goal.gridY = Math.round(goal.screenY/GRDS);     
+        goal.rot = gsap.getProperty('#shelf','rotation');
+
+        let instrcts = get_instructions(goal);
+
+        //  **  Draw
+        
+        // remove previous lines
+        let cont = $('#pathcontainer')[0]; 
+        while(cont.hasChildNodes() ){
+          cont.removeChild( cont.firstChild );
+          // Eo while
+        }
+
+        instrcts.forEach(function(x,i){
+          // only draw straights
+          if(x.dir==='straight'){
+            let from;
+            if(i<instrcts.length-1){
+              from = instrcts[i+1].state;
+            }
+            else
+              from = goal;
+
+            let p2 = [ (from.gridX+1) * GRDS +GRDS , (from.gridY+1) * GRDS +GRDS/2 ];
+            let p1 = [ (instrcts[i].state.gridX+1) * GRDS +GRDS , (instrcts[i].state.gridY+1) * GRDS +GRDS/2 ];
+
+            if(p1[0]>p2[0]){
+              let swp = p1[0];              p1[0] = p2[0];              p2[0] = swp;
+            }
+            if(p1[1]>p2[1]){
+              let swp = p1[1];              p1[1] = p2[1];              p2[1] = swp;
+            }
+            
+            let line;
+
+            if(p1[0]===p2[0]){
+              // vertical
+              line = $("<div/>",{ 'class': 'line' }).css({position:"absolute", height: Math.abs(p1[1]-p2[1]).toString()+'px', width:'4px', top:p1[1], left: p1[0], backgroundColor: 'red' }).prependTo($('#pathcontainer')); 
+            }
+            else if(p1[1]==p2[1]){
+              line = $("<div/>",{ 'class': 'line' }).css({position:"absolute", height: '4px', width:Math.abs(p1[0]-p2[0]).toString()+'px', top:p1[1], left: p1[0], backgroundColor: 'red' }).prependTo($('#pathcontainer')); 
+            }
+            else{
+              console.log(" ERR: what line is this? ", p1, p2 );
+            }
+
+            // if straight > path
+          }
+        });
+
+        // Eo drag
+      }
+    });
+
+    var last_click=0;
+
+    let p1 = [10,10];
+    let th = 2;
+
+    var testline = $("<div/>",{ id:'testline', 'class': 'line' }).css({position:"absolute", height: th.toString()+'px', width:'100px', top:p1[1], left:p1[0], backgroundColor: 'red' }).prependTo($('#controlcontainer')); 
+
+
+
+    // **  Eo on load
+  }
+
+function  millis(){
+  return new Date().getTime();
+}
+
+function submit_button(){
+
+  // goal
+  let goal = { screenX: drag[0].endX, screenY:drag[0].endY }; // start
+  goal.gridX = Math.round(goal.screenX/GRDS) +1; // +1 for center pos
+  goal.gridY = Math.round(goal.screenY/GRDS);     
+  goal.rot = gsap.getProperty('#shelf','rotation');
+
+  let instrcts = get_instructions(goal);
+
+  // remove previous lines
+  let cont = $('#pathcontainer')[0]; 
+  while(cont.hasChildNodes() ){
+    cont.removeChild( cont.firstChild );
+    // Eo while
+  }
+
+  // move shadow of previous
+  gsap.to('#last_shelf',{ duration: 1, x: goal.screenX, y: goal.screenY, rotation: goal.rot });
+  
+  console.log(' instructs : ', instrcts );
+
+  // gsap.set('#last_shelf',{  })
+  last_position = goal;
+}
+
+function get_instructions(goal)
+{
+
+  var delta = { x:  goal.gridX-last_position.gridX , y: goal.gridY-last_position.gridY  };
+  var there_yet = false;
+  var current = $.extend(true,{},last_position); 
+  var instructions = [];
+
+  var insts = 0;
+
+  while(!there_yet )    // && insts <5 
+  {
+    let d = { x : goal.gridX-current.gridX , y : goal.gridY-current.gridY };
+
+    if(current.rot==0)
+    {
+      // Horizontal 
+      if(d.x!=0){
+        // drive in this axis
+        instructions.push({ dir:'straight', mag: d.x, state: $.extend(true,{},current) });
+        current.gridX = goal.gridX;
+        // Eo x!=0
+      }
+      else 
+      {
+        instructions.push({ dir:'turn', mag: -90, state: $.extend(true,{},current)  });
+        current.rot += -90;
+        // Eo x==0
+      }
+      // Eo horizontal
+    }
+    else 
+    {
+      // Vertical
+      if(d.y!=0){
+        instructions.push({ dir:'straight', mag: d.y, state: $.extend(true,{},current) });
+        current.gridY = goal.gridY;
+        // Eo y!=0
+      }
+      else {
+        instructions.push({ dir:'turn', mag: 90, state: $.extend(true,{},current)  });
+        current.rot += 90;
+        // Eo y==0
+      }
+      // Eo vertical
+    }
+
+    if(current.gridX==goal.gridX && current.gridY==goal.gridY){
+      there_yet = true;
+    }
+
+    // insts++;
+
+    // Eo while
+  }
+
+  if(current.rot != goal.rot) {
+    let rotD = goal.rot - current.rot;
+    instructions.push({ dir:'turn', mag: rotD, state: $.extend(true,{},current) });
+    current.rot += rotD;
+    
+  }
+
+  return instructions;
+
+}
+
+
+
+</script>
+
+</body>
+</html>
