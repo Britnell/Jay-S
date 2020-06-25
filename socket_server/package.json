@@ -1,0 +1,19 @@
+{
+  "name": "socket_server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "socket_server.js",
+  "dependencies": {
+    "express": "^4.17.1",
+    "gsap": "^3.0.1",
+    "hammerjs": "^2.0.8",
+    "socket.io": "^2.3.0",
+    "ws": "^7.3.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

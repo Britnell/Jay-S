@@ -30,7 +30,7 @@
 
 """
 
-socket_disable = False
+socket_disable = True
 
 import usb.core
 import usb.util
@@ -69,8 +69,8 @@ def socket_msg(*args):
 class NetConn():
     socket = None
     def __init__(self):
-        serverName = 'MUL00175'  # 'MUL00175'     'nodeserver'   '192.168.86.127'
-        serverPort = 3000
+        serverName = 'localhost'  # 'MUL00175'     'nodeserver'   '192.168.86.127'
+        serverPort = 8000
         print "Connecting socket ", serverName, ":", serverPort
         self.socket = SocketIO(serverName, serverPort, LoggingNamespace)
         self.socket.on('connect', on_connect)
@@ -175,6 +175,7 @@ if dev:
     # *  Sending Transfer 
 
     print("Sending neonode config setup ")
+    # config 1 : 5 touches
     cfg_data = [ 0xEE, 0x09, 0x40, 0x02, 0x02, 0x00, 0x73, 0x03, 0x86, 0x01, 0x05 ] 
     airbar_send_config( cfg_data )
 
@@ -204,12 +205,18 @@ if dev:
                     # ** NO TOUCHES
                     #print "NO Touches : ", data[aix]
                     #touches.append(0)
-                    socketIO.emit('airbar', [0, 'release'] )
+                    if socketIO: 
+                    	socketIO.emit('airbar', [0, 'release'] )
+                    else:
+                    	print( 'release ')
                     first_touch = False
 
                 else:
                     if not first_touch:
-                        socketIO.emit('airbar', [0, 'touch'] )
+                    	if socketIO: 
+                        	socketIO.emit('airbar', [0, 'touch'] )
+                        else:
+                        	print(' touch ')
                         first_touch = True
 
                     # ** SEND TOUCHES
@@ -225,7 +232,8 @@ if dev:
                             air.append( ( data[aix+2] <<8) +data[aix+1] )   # 'x' = 1
                             air.append( ( data[aix+4] <<8) +data[aix+3] )   # 'y' = 2
                             air.append( data[aix+5] + (data[aix+6]<<8) )    # 's' = 3
-
+                        else:
+                        	air.append('release')
                         touches.append( air) 
                         aix += 9
 
@@ -234,6 +242,8 @@ if dev:
                         if socketIO:
                             #print 'airbar packet : ', touches
                             socketIO.emit('airbar', touches )
+                        else:
+                        	print( touches )
 
                 
             #sleep(0.005)

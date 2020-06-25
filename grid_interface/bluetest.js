@@ -1,0 +1,1 @@
+let terminal = new BluetoothTerminal();

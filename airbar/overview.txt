@@ -1,6 +1,6 @@
 		
 
-		# Airbar
+		# Airbar - - - - - - - - -  - - - 
 
 HID_read_test.py : 		connects to USB HID and reads data
 
@@ -16,9 +16,13 @@ airbar_conf.py :		new nametree, but essentially ...conf2
 
 airbar_conf2.py :		start tidying , functions, etc.
 
+airbar_conf3.py : 		?
+
+airbar_conf3_only		sends conf and finishes - test if config stays for HID device, but no ...
 
 
-		# Cobwebs
+
+		# Cobwebs - - - - - - 
 
 
 X - HID_get_airbar.py : i think i tried to divide into funcitons here...

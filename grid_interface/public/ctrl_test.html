@@ -1,0 +1,112 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Berp</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
+
+
+    <!-- <script src='https://s3-us-west-2.amazonaws.com/s.cdpn.io/16327/gsap-latest-beta.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/gsap/1.20.2/TweenMax.min.js'></script>
+     -->
+    <script src='/static/gsap.min.js'></script>
+    <script src='/static/Draggable.min.js'></script>
+    
+    <style>
+
+      .dir {
+        display: inline;
+        background-color: lightgrey;
+        border-radius: 10px;
+        margin: 30px;
+        padding: 15px;
+      }
+      #dircontainer {
+        margin: 50px;
+      }
+
+
+
+	 </style>
+
+
+  </head>
+<body >
+    
+    <div id="inputcontainer">
+      <div class="slidecontainer">
+          <input type="range" min="1" max="100" value="50" class="slider" id="timeslider">
+      </div>
+      <div id="sliderlabel">
+          <span id="slidernumber">50</span> %
+      </div>
+
+
+      <div id="dircontainer">
+        <div id="leftup" class="dir">Left Up</div>
+        <div id="rightup" class="dir">Right Up</div>
+      </div>
+      <div id="dircontainer">
+        <div id="leftdown" class="dir">Left Down</div>
+        <div id="rightdown" class="dir">Right Down</div>
+      </div>
+      <div>
+        
+      </div>
+
+      
+    </div>
+
+<script>
+    var $slider = $('#timeslider')[0];
+    var $sliderLabel = $('#slidernumber')[0];
+
+    $slider.onchange = function(){
+      $sliderLabel.textContent = $slider.value;
+    }
+
+    var LU = $('#leftup')[0];
+    var RU = $('#rightup')[0];
+    var LD = $('#leftdown')[0];
+    var RD = $('#rightdown')[0];
+
+    var left = 'x', right = 'x';
+    
+    LU.style.backgroundColor = 'lightgrey';
+    RU.style.backgroundColor = 'lightgrey';
+    LD.style.backgroundColor = 'lightgrey';
+    RD.style.backgroundColor = 'lightgrey';
+
+    LU.onclick = function(x){
+      let self = x.toElement;
+      
+      console.log('click : ', x.toElement );
+      if()
+      if(left=='x'){
+        // was off
+        LU.style.backgroundColor = 'blue';
+        left = 'u';
+      }
+      else if(left=='u') {
+        // was on
+        LU.style.backgroundColor = 'lightgrey';
+        left = 'x';
+      }
+      else if(left=='d'){
+        // was down
+        LU.style.backgroundColor = 'blue';
+        LD.style.backgroundColor = 'lightgrey';
+        left = 'u';
+      }
+    }
+    
+
+</script>
+
+
+</body>
+</html>

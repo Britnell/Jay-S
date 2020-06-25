@@ -1,0 +1,139 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Berp</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
+
+
+    <!-- <script src='https://s3-us-west-2.amazonaws.com/s.cdpn.io/16327/gsap-latest-beta.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/gsap/1.20.2/TweenMax.min.js'></script>
+     -->
+    <script src='/static/gsap.min.js'></script>
+    <script src='/static/Draggable.min.js'></script>
+    <script src='/static/BluetoothTerminal_M.js'></script>
+    
+    <style>
+
+      .container{
+        margin: 50px;
+
+      }
+      .butt {
+        display: inline;
+        background-color: lightgrey;
+        border-radius: 10px;
+        margin: 30px;
+        padding: 15px;
+      }
+      #dircontainer {
+        margin: 50px;
+      }
+
+
+
+
+	 </style>
+
+
+  </head>
+<body >
+<div class="container">    
+    <div class="butt" id="pair">PAIR</div>
+  </div>
+  <div class="container">
+    <div class="butt" id='left'>Left</div>
+    <div class="butt" id='right'>Right</div>
+    <div class="butt" id='fwd'>Forward</div>
+    <div class="butt" id='rvs'>Back</div>
+</div>
+<div class="container">
+    <div class="butt" id='fwdHalf'>Forward half</div>
+    <div class="butt" id='rvsHalf'>Back half</div>
+  </div>
+<div class="container">
+    <div class="butt" id='g0'>Gear 0</div>
+    <div class="butt" id='g1'>Gear 1</div>
+    <div class="butt" id='g2'>Gear 2</div>
+  </div>
+
+
+<script>
+
+    // Obtain configured instance.
+var terminal = new BluetoothTerminal();
+var device;
+
+$('#pair')[0].onclick = function(){
+  console.log(' click ');
+  terminal._requestBluetoothDevice().then(dev=>{
+    console.log(' paried ', dev, ' id : ', dev.id, ' > Connected:        ' + dev.gatt.connected);
+    terminal._connectToDevice(dev).then(res=>{
+      console.log(' Connection done ' );
+      $('#pair')[0].textContent = ' CONNECTED ';
+      // Eo connect dev
+    });
+    // Eo request dev
+  });
+}
+
+$('#left')[0].onclick = function(){
+  terminal.send('l');
+}
+$('#right')[0].onclick = function(){
+  terminal.send('r');
+}
+$('#fwd')[0].onclick = function(){
+  terminal.send('F');
+}
+$('#rvs')[0].onclick = function(){
+  terminal.send('B');
+}
+
+$('#fwdHalf')[0].onclick = function(){
+  terminal.send('f');
+}
+$('#rvsHalf')[0].onclick = function(){
+  terminal.send('b');
+}
+
+
+
+$('#g0')[0].onclick = function(){
+  terminal.send('0');
+}
+$('#g1')[0].onclick = function(){
+  terminal.send('1');
+}
+$('#g2')[0].onclick = function(){
+  terminal.send('2');
+}
+
+
+
+// Override `receive` method to handle incoming data as you want.
+// terminal.receive = function(data) {
+//   alert(data);
+// };
+ 
+// Request the device for connection and get its name after successful connection.
+// terminal.connect().then(() => {
+//   console.log(terminal.getDeviceName() + ' is connected!');
+// });
+ 
+// // Send something to the connected device.
+// // terminal.send('Simon says: Hello, world!');
+ 
+// // Disconnect from the connected device.
+// terminal.disconnect();
+    
+
+</script>
+
+
+</body>
+</html>
